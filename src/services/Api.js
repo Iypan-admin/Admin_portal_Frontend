@@ -2,24 +2,24 @@
 
 // Define different backend URLs for each service
 const AUTH_API_URL = "https://auth.iypan.com"; // For login/authentication
-// const USER_API_URL = "https://role.iypan.com"; // For user creation and deletion
-// const LIST_API_URL = "https://listing.iypan.com/api"; // For listing services  
-// const ASSIGN_API_URL = "https://assign.iypan.com"; // For Assigning services
-// const FINANCE_API_URL = "https://financial.iypan.com/api/financial" // For Financial services
-// const BATCHES_URL = "https://academic.iypan.com/api/batches"; // For Academic (Batch) services
-// const GMEETS_API_URL = "https://academic.iypan.com/api/gmeets"; // For Academic (GMeet) services
-// const NOTES_API_URL = "https://academic.iypan.com/api/notes"; // For Academic (Note) services
-// const COURSES_API_URL = "https://academic.iypan.com/api/courses/"; // For Academic (Course) services
+const USER_API_URL = "https://role.iypan.com"; // For user creation and deletion
+const LIST_API_URL = "https://listing.iypan.com/api"; // For listing services  
+const ASSIGN_API_URL = "https://assign.iypan.com"; // For Assigning services
+const FINANCE_API_URL = "https://financial.iypan.com/api/financial" // For Financial services
+const BATCHES_URL = "https://academic.iypan.com/api/batches"; // For Academic (Batch) services
+const GMEETS_API_URL = "https://academic.iypan.com/api/gmeets"; // For Academic (GMeet) services
+const NOTES_API_URL = "https://academic.iypan.com/api/notes"; // For Academic (Note) services
+const COURSES_API_URL = "https://academic.iypan.com/api/courses/"; // For Academic (Course) services
 const CHAT_API_URL = "https://chat.iypan.com"; // For Chat services
 
-const USER_API_URL = "http://localhost:3001";
-const LIST_API_URL = "http://localhost:3008/api";
-const FINANCE_API_URL = "http://localhost:3007/api/financial";
-const ASSIGN_API_URL = "http://localhost:3002";
-const BATCHES_URL = "http://localhost:3005/api/batches";
-const GMEETS_API_URL = "http://localhost:3005/api/gmeets";
-const NOTES_API_URL = "http://localhost:3005/api/notes";
-const COURSES_API_URL = "http://localhost:3005/api/courses/";
+// const USER_API_URL = "http://localhost:3001";
+// const LIST_API_URL = "http://localhost:3008/api";
+// const FINANCE_API_URL = "http://localhost:3007/api/financial";
+// const ASSIGN_API_URL = "http://localhost:3002";
+// const BATCHES_URL = "http://localhost:3005/api/batches";
+// const GMEETS_API_URL = "http://localhost:3005/api/gmeets";
+// const NOTES_API_URL = "http://localhost:3005/api/notes";
+// const COURSES_API_URL = "http://localhost:3005/api/courses/";
 // ----------------------
 // Authentication Functions
 // ----------------------
