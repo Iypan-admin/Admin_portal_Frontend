@@ -19,17 +19,17 @@ const FinanceAdminPage = () => {
       try {
         setLoading(true);
         const response = await getAllTransactions();
-        
+
         // Calculate stats based on transactions
         const transactions = Array.isArray(response) ? response : response.data || [];
         const pendingTransactions = transactions.filter(t => !t.status);
         const approvedTransactions = transactions.filter(t => t.status);
-        
+
         // Sort transactions by date (newest first) and get the 5 most recent pending ones
         const recentPending = [...pendingTransactions]
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
           .slice(0, 5);
-        
+
         setStats({
           totalTransactions: transactions.length,
           pendingTransactions: pendingTransactions.length,
@@ -59,7 +59,7 @@ const FinanceAdminPage = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 gap-4 sm:gap-0">
                   <div className="p-3 bg-blue-50 rounded-full self-start">
                     <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -125,7 +125,7 @@ const FinanceAdminPage = () => {
               </div>
 
               {/* Recent Transactions Card */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-4 sm:mb-6">
                   <div>
                     <h2 className="text-lg sm:text-xl font-bold text-gray-800">Recent Pending Transactions</h2>
@@ -147,7 +147,7 @@ const FinanceAdminPage = () => {
                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
                   </div>
                 ) : stats.recentPendingTransactions.length === 0 ? (
-                  <div className="text-center py-8 sm:py-12">
+                  <div className="text-center py-4 sm:py-7">
                     <svg className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
