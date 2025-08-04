@@ -86,10 +86,10 @@ const ViewCenterEliteCard = () => {
         <div className="min-h-screen bg-gray-100 flex">
             <Navbar />
             <div className="flex-1 lg:ml-64">
-                <div className="p-2 sm:p-4 lg:p-8">
+                <div className="p-4 sm:p-6 lg:p-8">
                     <div className="mt-16 lg:mt-0">
                         <div className="max-w-7xl mx-auto">
-                            <div className="flex justify-between items-center mb-4">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
                                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Elite Card Members</h1>
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
@@ -115,18 +115,19 @@ const ViewCenterEliteCard = () => {
                                     <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
                                 </div>
                             ) : (
-                                <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                                    <div className="overflow-x-auto max-h-[calc(100vh-250px)] overflow-y-auto">
-                                        <table className="min-w-full divide-y divide-gray-200">
+                                <div className="bg-white shadow-md rounded-lg overflow-hidden w-full">
+                                    <div className="overflow-x-auto rounded-md border border-gray-200 max-w-full">
+                                        <table className="w-full table-auto text-sm">
                                             <thead className="bg-gray-50 sticky top-0 z-10">
                                                 <tr>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student Name</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Student Name</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Register Number</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Card Number</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Card Type</th>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Created</th>
                                                 </tr>
                                             </thead>
+
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {eliteCards.length === 0 ? (
                                                     <tr>
@@ -137,7 +138,7 @@ const ViewCenterEliteCard = () => {
                                                 ) : (
                                                     eliteCards.map((card) => (
                                                         <tr key={card.id} className="hover:bg-gray-50">
-                                                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{card.student_name}</td>
+                                                            <td className="px-4 py-3 text-sm font-medium text-gray-900 hidden sm:table-cell">{card.student_name}</td>
                                                             <td className="px-4 py-3 text-sm text-gray-800">{card.register_number}</td>
                                                             <td className="px-4 py-3 text-sm text-gray-700">{card.card_number}</td>
                                                             <td className="px-4 py-3 text-sm">
@@ -145,7 +146,7 @@ const ViewCenterEliteCard = () => {
                                                                     {card.card_type}
                                                                 </span>
                                                             </td>
-                                                            <td className="px-4 py-3 text-sm text-gray-500">{formatDate(card.created_at)}</td>
+                                                            <td className="px-4 py-3 text-sm text-gray-500 hidden sm:table-cell">{formatDate(card.created_at)}</td>
                                                         </tr>
                                                     ))
                                                 )}
@@ -162,7 +163,9 @@ const ViewCenterEliteCard = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-                    <div className="bg-white px-6 py-8 rounded-lg shadow-lg w-full max-w-md">
+                    <div className="bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4 sm:mx-auto">
+
+
                         <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">Connect Elite Card</h2>
                         <form onSubmit={handleFormSubmit} className="space-y-5">
 
