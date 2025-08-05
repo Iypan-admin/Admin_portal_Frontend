@@ -7,7 +7,11 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
     duration: 6,
     center: '',
     teacher: '',
-    course_id: ''
+    course_id: '',
+    mode: '',
+    type: '',
+    time_from: '',
+    time_to: ''
   });
 
   const [centers, setCenters] = useState([]);
@@ -23,6 +27,10 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
     teachers: null,
     courses: null
   });
+
+
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,7 +107,10 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
         duration: parseInt(formData.duration),
         center: formData.center,
         teacher: formData.teacher,
-        course_id: formData.course_id
+        course_id: formData.course_id,
+        mode: formData.mode,
+        time_from: formData.time_from,
+        time_to: formData.time_to
       };
 
       await onSubmit(batchData);
@@ -128,59 +139,6 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Batch Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Batch Name</label>
-                <input
-                  type="text"
-                  placeholder="20XXISMLXX"
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  value={formData.batch_name}
-                  onChange={(e) => setFormData({ ...formData, batch_name: e.target.value })}
-                  required
-                />
-              </div>
-
-              {/* Course Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
-                {loading.courses ? (
-                  <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg">
-                    <div className="animate-pulse flex space-x-4">
-                      <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-                    </div>
-                  </div>
-                ) : error.courses ? (
-                  <div className="text-sm text-red-600 bg-red-50 p-2 rounded-lg">{error.courses}</div>
-                ) : (
-                  <select
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    value={formData.course_id}
-                    onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}
-                    required
-                  >
-                    <option value="">Select a course</option>
-                    {courses.map((course) => (
-                      <option key={course.id} value={course.id}>
-                        {course.course_name} - {course.type}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </div>
-
-              {/* Duration */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Duration (months)</label>
-                <input
-                  type="number"
-                  value={formData.duration}
-                  readOnly
-                  className="w-full px-4 py-2.5 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
-                />
-              </div>
-
-
               {/* Center Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Center</label>
@@ -216,6 +174,139 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                 )}
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+                <select
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={formData.language}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      language: e.target.value,
+                      type: '',
+                      mode: '',
+                      course_id: ''
+                    })
+                  }
+                  required
+                >
+                  <option value="">Select Language</option>
+                  {[...new Set(courses.map((c) => c.language))].map((lang) => (
+                    <option key={lang} value={lang}>
+                      {lang}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {formData.language && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <select
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={formData.type}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        type: e.target.value,
+                        mode: '',
+                        course_id: ''
+                      })
+                    }
+                    required
+                  >
+                    <option value="">Select Type</option>
+                    {[...new Set(courses.filter(c => c.language === formData.language).map(c => c.type))].map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {formData.language && formData.type && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
+                  <select
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={formData.mode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        mode: e.target.value,
+                        course_id: ''
+                      })
+                    }
+                    required
+                  >
+                    <option value="">Select Mode</option>
+                    {[...new Set(courses
+                      .filter(c => c.language === formData.language && c.type === formData.type)
+                      .map(c => c.mode))].map(mode => (
+                        <option key={mode} value={mode}>{mode}</option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+
+              {formData.language && formData.type && formData.mode && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                  <select
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={formData.course_id}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      const selectedCourse = courses.find(
+                        (c) =>
+                          c.id === selectedId &&
+                          c.language === formData.language &&
+                          c.type === formData.type &&
+                          c.mode === formData.mode
+                      );
+
+                      setFormData({
+                        ...formData,
+                        course_id: selectedId,
+                        duration: selectedCourse?.duration || 6,
+                      });
+                    }}
+                    required
+                  >
+                    <option value="">Select Course</option>
+                    {courses
+                      .filter(
+                        (c) =>
+                          c.language === formData.language &&
+                          c.type === formData.type &&
+                          c.mode === formData.mode
+                      )
+                      .map((course) => (
+                        <option key={course.id} value={course.id}>
+                          {course.course_name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+
+
+
+              {/* Duration */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Duration (months)</label>
+                <input
+                  type="number"
+                  value={formData.duration}
+                  readOnly
+                  className="w-full px-4 py-2.5 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
+                />
+              </div>
+
+
+
+
+
               {/* Teacher Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Teacher</label>
@@ -243,6 +334,31 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                   </select>
                 )}
               </div>
+
+              <div className="flex gap-4">
+                <div className="flex flex-col w-full">
+                  <label className="mb-1 text-sm font-medium text-gray-700">From</label>
+                  <input
+                    type="time"
+                    className="px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50"
+                    value={formData.time_from}
+                    onChange={(e) => setFormData({ ...formData, time_from: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col w-full">
+                  <label className="mb-1 text-sm font-medium text-gray-700">To</label>
+                  <input
+                    type="time"
+                    className="px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50"
+                    value={formData.time_to}
+                    onChange={(e) => setFormData({ ...formData, time_to: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
             </div>
 
             {/* Modal Footer */}
