@@ -137,8 +137,8 @@ const LoginPage = ({ setRole }) => {
             type="submit"
             disabled={loading}
             className={`w-full py-3 rounded-lg text-white text-sm font-semibold transition-all duration-200 ${loading
-                ? "bg-blue-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-lg"
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 shadow-lg"
               }`}
           >
             {loading ? (
@@ -154,6 +154,9 @@ const LoginPage = ({ setRole }) => {
 
         <p className="text-xs text-center text-gray-500 mt-6">
           2025 ISML Portal by IYPAN Educational Centre Pvt. Ltd.
+        </p>
+        <p className="text-xs text-center text-gray-500 mt-1">
+          Version 1.0
         </p>
       </div>
     </div>
