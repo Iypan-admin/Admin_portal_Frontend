@@ -10,6 +10,13 @@ const ManageBatchesPage = () => {
   const [error, setError] = useState(null);
   const [editingBatch, setEditingBatch] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredBatches = batches.filter((batch) =>
+    batch.center_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
 
   const fetchBatches = async () => {
     try {
@@ -43,15 +50,15 @@ const ManageBatchesPage = () => {
     try {
       setError(null);
       const token = localStorage.getItem("token");
-      
+
       console.log("Updating batch:", { batchId, updateData }); // Debug log
-      
+
       const response = await updateBatch(token, batchId, updateData);
-      
+
       if (response && response.success) {
         // Show success message
         alert("Batch updated successfully!");
-        
+
         // Refresh the batches list
         await fetchBatches();
         setEditingBatch(null);
@@ -164,6 +171,18 @@ const ManageBatchesPage = () => {
                   {error}
                 </div>
               )}
+              {/* Search Center Name */}
+              <div className="mb-4 w-full sm:w-1/2">
+                <input
+                  type="text"
+                  placeholder="Search by center name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+
 
               {/* Table Container */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -195,18 +214,18 @@ const ManageBatchesPage = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {batches.map((batch) => (
+                      {filteredBatches.map((batch) => (
+
                         <tr key={batch.batch_id} className="hover:bg-gray-50">
                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {batch.batch_name}
                           </td>
                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                batch.course_type === "Immersion"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-blue-100 text-blue-800"
-                              }`}
+                              className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
+                                }`}
                             >
                               {batch.course_type}
                             </span>

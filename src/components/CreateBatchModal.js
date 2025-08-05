@@ -4,7 +4,7 @@ import { getAllCenters, getAllTeachers, getAllCourses } from '../services/Api';
 const CreateBatchModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     batch_name: '',
-    duration: 6,
+    duration: '',
     center: '',
     teacher: '',
     course_id: '',
