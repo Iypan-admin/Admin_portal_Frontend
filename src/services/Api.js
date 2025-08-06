@@ -776,7 +776,14 @@ export const getTeachersByCenter = async (centerId, token) => {
     }
 };
 export const fetchEliteCards = async () => {
-    const response = await fetch(`${LIST_API_URL}/elite-cards`);
+    const token = localStorage.getItem("token"); // Retrieve the JWT token
+
+    const response = await fetch(`${LIST_API_URL}/elite-cards`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
     const result = await response.json();
 
     if (!result.success) {
@@ -787,11 +794,14 @@ export const fetchEliteCards = async () => {
 };
 
 export const addEliteCard = async (formData) => {
+    const token = localStorage.getItem("token"); // Retrieve the JWT token
+
     const response = await fetch(`${LIST_API_URL}/elite-cards`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Cache-Control": "no-cache",
+            "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
     });
@@ -804,6 +814,7 @@ export const addEliteCard = async (formData) => {
 
     return result;
 };
+
 
 export const getInfluencerCount = async () => {
     const res = await fetch(`${LIST_API_URL}/influencers/count`);
