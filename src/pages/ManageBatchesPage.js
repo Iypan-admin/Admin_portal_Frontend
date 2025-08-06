@@ -217,9 +217,13 @@ const ManageBatchesPage = () => {
                       {filteredBatches.map((batch) => (
 
                         <tr key={batch.batch_id} className="hover:bg-gray-50">
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td
+                            className="px-4 sm:px-6 py-4 text-sm font-medium text-gray-900 max-w-[160px] truncate"
+                            title={batch.batch_name}
+                          >
                             {batch.batch_name}
                           </td>
+
                           <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
