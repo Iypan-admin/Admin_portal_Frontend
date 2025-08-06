@@ -121,8 +121,8 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-2 py-4 z-50">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
@@ -136,7 +136,7 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Center Selection */}
@@ -310,6 +310,7 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
               {/* Teacher Selection */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Teacher</label>
+
                 {loading.teachers ? (
                   <div className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg">
                     <div className="animate-pulse flex space-x-4">
@@ -326,16 +327,23 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                     required
                   >
                     <option value="">Select a teacher</option>
-                    {teachers.map((teacher) => (
-                      <option key={teacher.teacher_id} value={teacher.teacher_id}>
-                        {teacher.teacher_name}
-                      </option>
-                    ))}
+                    {teachers
+                      .filter((teacher) => {
+                        const match = teacher.center_id === formData.center;
+                        console.log(`Teacher: ${teacher.teacher_name}, center_id: ${teacher.center_id}, match: ${match}`);
+                        return match;
+                      })
+                      .map((teacher) => (
+                        <option key={teacher.teacher_id} value={teacher.teacher_id}>
+                          {teacher.teacher_name}
+                        </option>
+                      ))}
                   </select>
                 )}
               </div>
 
-              <div className="flex gap-4">
+
+              <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex flex-col w-full">
                   <label className="mb-1 text-sm font-medium text-gray-700">From</label>
                   <input
