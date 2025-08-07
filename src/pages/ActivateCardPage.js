@@ -5,6 +5,8 @@ import { uploadCSVData, getAllCardData } from "../services/Api";
 const ActivateCardPage = () => {
     const [allData, setAllData] = useState([]);
     const [uploadMessage, setUploadMessage] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+
 
     // 👇 Fetch data using service
     const fetchData = async () => {
@@ -59,32 +61,47 @@ const ActivateCardPage = () => {
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">Activate Cards</h1>
                     </div>
 
-                    {/* Upload CSV with Sample CSV Download */}
-                    <div className="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row md:items-end md:justify-between">
-                        <div className="mb-4 md:mb-0">
+                    {/* Upload CSV, Search by Card No, and Sample CSV Download */}
+                    <div className="max-w-7xl mx-auto mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                        {/* Upload CSV */}
+                        <div className="flex-1">
                             <label className="block mb-2 text-sm font-medium text-gray-700">Upload CSV</label>
                             <input
                                 type="file"
                                 accept=".csv"
                                 onChange={handleCSVUpload}
-                                className="border border-gray-300 rounded-lg px-4 py-2 w-full max-w-md text-sm"
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full text-sm"
                             />
                             {uploadMessage && (
                                 <p className="text-sm text-blue-600 mt-2">{uploadMessage}</p>
                             )}
                         </div>
 
-                        <div className="md:ml-4">
+                        {/* Search Card No */}
+                        <div className="flex-1">
+                            <label className="block mb-2 text-sm font-medium text-gray-700">Search by Card No</label>
+                            <input
+                                type="text"
+                                placeholder="Enter card number..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="border border-gray-300 rounded-lg px-4 py-2 w-full text-sm"
+                            />
+                        </div>
+
+                        {/* Sample CSV Download */}
+                        <div className="md:w-48">
                             <label className="block mb-2 text-sm font-medium text-gray-700 invisible md:visible">Sample CSV Format</label>
                             <a
                                 href="/card.csv"
                                 download
-                                className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg"
+                                className="inline-block bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg w-full text-center"
                             >
                                 Download Sample CSV
                             </a>
                         </div>
                     </div>
+
 
 
                     {/* Table */}
@@ -107,24 +124,30 @@ const ActivateCardPage = () => {
                         <div className="overflow-y-auto max-h-[370px]">
                             <table className="min-w-full bg-white">
                                 <tbody className="text-gray-700">
-                                    {allData.length > 0 ? (
-                                        allData.map((item, index) => (
-                                            <tr key={index} className="border-t border-gray-200">
-                                                <td className="px-6 py-4 text-sm">{item.cardNo}</td>
-                                                <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.cardName}</td>
-                                                <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.cardType}</td>
-                                                <td className="px-6 py-4 text-sm">{item.paymentId}</td>
-                                                <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.paymentDate}</td>
-                                                <td className="px-6 py-4 text-sm">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.status === "Active"
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-yellow-100 text-yellow-800"
-                                                        }`}>
-                                                        {item.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))
+                                    {allData.filter((item) =>
+                                        item.cardNo.toLowerCase().includes(searchQuery.toLowerCase())
+                                    ).length > 0 ? (
+                                        allData
+                                            .filter((item) =>
+                                                item.cardNo.toLowerCase().includes(searchQuery.toLowerCase())
+                                            )
+                                            .map((item, index) => (
+                                                <tr key={index} className="border-t border-gray-200">
+                                                    <td className="px-6 py-4 text-sm">{item.cardNo}</td>
+                                                    <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.cardName}</td>
+                                                    <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.cardType}</td>
+                                                    <td className="px-6 py-4 text-sm">{item.paymentId}</td>
+                                                    <td className="px-6 py-4 text-sm hidden sm:table-cell">{item.paymentDate}</td>
+                                                    <td className="px-6 py-4 text-sm">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${item.status === "Active"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : "bg-yellow-100 text-yellow-800"
+                                                            }`}>
+                                                            {item.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))
                                     ) : (
                                         <tr>
                                             <td colSpan={6} className="text-center py-4 text-sm text-gray-500">
