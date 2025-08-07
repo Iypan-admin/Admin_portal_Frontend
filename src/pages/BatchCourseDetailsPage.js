@@ -20,7 +20,7 @@ function BatchCourseDetailsPage() {
 
         setLoadingBatch(true);
         const response = await getBatchById(token, batchId);
-        
+
         if (response && response.success && response.data) {
           setBatch(response.data);
         } else {
@@ -46,7 +46,7 @@ function BatchCourseDetailsPage() {
 
         setLoadingStudents(true);
         const response = await getTeacherBatchStudents(batchId, token);
-        
+
         // Update this condition to match new response structure
         if (response && response.success && Array.isArray(response.data)) {
           setStudents(response.data); // response.data already contains the formatted student data
@@ -158,8 +158,6 @@ function BatchCourseDetailsPage() {
                               <tr>
                                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Reg Number</th>
                                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                <th className="hidden md:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                <th className="hidden md:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
                                 <th className="hidden lg:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Center</th>
                                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                               </tr>
@@ -175,19 +173,12 @@ function BatchCourseDetailsPage() {
                                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                     <div className="text-xs sm:text-sm text-gray-900 truncate max-w-[100px] sm:max-w-none">{student.name}</div>
                                   </td>
-                                  <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                    <div className="text-xs sm:text-sm text-gray-500 truncate max-w-[150px] lg:max-w-none">{student.email}</div>
-                                  </td>
-                                  <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                    <div className="text-xs sm:text-sm text-gray-500">{student.phone}</div>
-                                  </td>
                                   <td className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                     <div className="text-xs sm:text-sm text-gray-500">{student.center_name}</div>
                                   </td>
                                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                    <span className={`px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full ${
-                                      student.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                    }`}>
+                                    <span className={`px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full ${student.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                      }`}>
                                       {student.status ? 'Active' : 'Inactive'}
                                     </span>
                                   </td>
