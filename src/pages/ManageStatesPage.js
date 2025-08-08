@@ -67,7 +67,7 @@ const ManageStatesPage = () => {
           <div className="mt-16 lg:mt-0">
             <div className="max-w-7xl mx-auto">
               <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Manage States</h1>
+                <h1 className="text-2xl font-bold text-gray-900">Manage Center Mode</h1>
                 <button
                   onClick={() => setShowCreateModal(true)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
