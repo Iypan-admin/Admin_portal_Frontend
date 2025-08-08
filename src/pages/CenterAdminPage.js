@@ -89,9 +89,9 @@ function CenterAdminPage() {
           console.error("API Error Details:", {
             error: apiError,
             message: apiError.message,
-            studentsUrl: `${process.env.REACT_APP_LIST_API_URL}/students/center/${center.center_id}`,
-            teachersUrl: `${process.env.REACT_APP_LIST_API_URL}/center/${center.center_id}/teachers`,
-            batchesUrl: `${process.env.REACT_APP_LIST_API_URL}/batchcenter/${center.center_id}`,
+            studentsUrl: `${process.env.LIST_API_URL}/students/center/${center.center_id}`,
+            teachersUrl: `${process.env.LIST_API_URL}/center/${center.center_id}/teachers`,
+            batchesUrl: `${process.env.LIST_API_URL}/batchcenter/${center.center_id}`,
           });
           throw new Error(`Failed to fetch data: ${apiError.message}`);
         }
@@ -128,8 +128,9 @@ function CenterAdminPage() {
                   </div>
                   <div>
                     <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800">
-                      Center Admin Dashboard
+                      Dashboard : {selectedCenter ? selectedCenter.center_name : ""}
                     </h1>
+
                   </div>
                 </div>
               </div>

@@ -24,25 +24,24 @@ function ViewStudentsPage() {
 
   useEffect(() => {
     const loadCenter = async () => {
-      const savedCenter = localStorage.getItem("selectedCenterView");
-      if (savedCenter) {
-        setSelectedCenter(JSON.parse(savedCenter));
-      } else {
-        // Fallback: get center for current admin
-        const token = localStorage.getItem("token");
-        if (token) {
-          const centerResponse = await getCenterByAdminId(token);
-          if (centerResponse.success && Array.isArray(centerResponse.data) && centerResponse.data.length > 0) {
-            const center = centerResponse.data[0];
-            setSelectedCenter({
-              center_id: center.center_id,
-              center_name: center.center_name
-            });
-          }
+      const token = localStorage.getItem("token");
+      if (token) {
+        const centerResponse = await getCenterByAdminId(token);
+        if (
+          centerResponse.success &&
+          Array.isArray(centerResponse.data) &&
+          centerResponse.data.length > 0
+        ) {
+          const center = centerResponse.data[0];
+          setSelectedCenter({
+            center_id: center.center_id,
+            center_name: center.center_name,
+          });
         }
       }
     };
     loadCenter();
+
   }, []);
 
   useEffect(() => {
@@ -61,7 +60,7 @@ function ViewStudentsPage() {
         console.log('Fetching students for center:', selectedCenter.center_id); // Debug log
         const token = localStorage.getItem('token');
         const response = await getStudentsByCenter(selectedCenter.center_id, token);
-        
+
         console.log('API Response:', response); // Debug log
 
         if (!response || !response.success) {
@@ -86,8 +85,8 @@ function ViewStudentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      <Navbar 
-        showCenterViewOptions={!!selectedCenter} 
+      <Navbar
+        showCenterViewOptions={!!selectedCenter}
         selectedCenter={selectedCenter}
       />
       <div className="flex-1 lg:ml-64">
@@ -162,9 +161,8 @@ function ViewStudentsPage() {
                                   {formatPhone(student.phone)}
                                 </td>
                                 <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                  <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${
-                                    student.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                  }`}>
+                                  <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${student.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                    }`}>
                                     {student.status ? 'Active' : 'Inactive'}
                                   </span>
                                 </td>
