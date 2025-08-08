@@ -8,7 +8,7 @@ function TakeClassPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [upcomingClasses, setUpcomingClasses] = useState({ today: [], future: [] });
-  
+
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -57,7 +57,7 @@ function TakeClassPage() {
       };
 
       await createGMeet(gmeetData, token);
-      
+
       setFormData({
         date: '',
         time: '',
@@ -108,7 +108,7 @@ function TakeClassPage() {
       try {
         const token = localStorage.getItem('token');
         await deleteGMeet(meetId, token);
-        
+
         // After successful deletion, refresh the class list
         fetchUpcomingClasses();
       } catch (error) {
@@ -173,7 +173,7 @@ function TakeClassPage() {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Time
+                            Time (IST)
                           </label>
                           <input
                             type="time"
@@ -238,11 +238,10 @@ function TakeClassPage() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className={`w-full py-2 px-4 rounded-md transition-colors ${
-                        submitting 
-                          ? 'bg-blue-400 cursor-not-allowed' 
+                      className={`w-full py-2 px-4 rounded-md transition-colors ${submitting
+                          ? 'bg-blue-400 cursor-not-allowed'
                           : 'bg-blue-600 hover:bg-blue-700'
-                      } text-white`}
+                        } text-white`}
                     >
                       {submitting ? 'Scheduling...' : 'Schedule Class'}
                     </button>
@@ -250,7 +249,7 @@ function TakeClassPage() {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm p-6">
-{}                  <div className="space-y-6">
+                  { }                  <div className="space-y-6">
                     <div>
                       <h2 className="text-lg font-semibold text-gray-800 mb-4">Today's Classes</h2>
                       <div className="space-y-4">
@@ -277,13 +276,13 @@ function TakeClassPage() {
                                     )}
                                   </div>
                                   <div className="flex space-x-2">
-                                    <button 
+                                    <button
                                       onClick={() => window.open(classItem.meet_link, '_blank')}
                                       className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors"
                                     >
                                       Join Meet
                                     </button>
-                                    <button 
+                                    <button
                                       onClick={() => handleDeleteClass(classItem.meet_id)}
                                       className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium hover:bg-red-200 transition-colors"
                                     >
@@ -327,13 +326,13 @@ function TakeClassPage() {
                                     )}
                                   </div>
                                   <div className="flex space-x-2">
-                                    <button 
+                                    <button
                                       onClick={() => window.open(classItem.meet_link, '_blank')}
                                       className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors"
                                     >
                                       Join Meet
                                     </button>
-                                    <button 
+                                    <button
                                       onClick={() => handleDeleteClass(classItem.meet_id)}
                                       className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-medium hover:bg-red-200 transition-colors"
                                     >

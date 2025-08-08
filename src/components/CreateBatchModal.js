@@ -97,6 +97,27 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
       }));
     }
   }, [formData.course_id, courses]);
+  useEffect(() => {
+    if (formData.center && formData.language && formData.type) {
+      const selectedCenter = centers.find(c => c.center_id === formData.center);
+
+      if (selectedCenter?.center_admin?.name === "ISMLHQ") {
+        setFormData(prev => ({
+          ...prev,
+          mode: "Online",
+          course_id: ""
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          mode: "Offline",
+          course_id: ""
+        }));
+      }
+    }
+  }, [formData.center, formData.language, formData.type, centers]);
+
+
 
 
   const handleSubmit = async (e) => {
@@ -227,26 +248,21 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Mode</label>
                   <select
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
                     value={formData.mode}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        mode: e.target.value,
-                        course_id: ''
-                      })
-                    }
+                    disabled
                     required
                   >
-                    <option value="">Select Mode</option>
-                    {[...new Set(courses
-                      .filter(c => c.language === formData.language && c.type === formData.type)
-                      .map(c => c.mode))].map(mode => (
-                        <option key={mode} value={mode}>{mode}</option>
-                      ))}
+                    {formData.mode ? (
+                      <option value={formData.mode}>{formData.mode}</option>
+                    ) : (
+                      <option value="">Select Mode</option>
+                    )}
                   </select>
                 </div>
               )}
+
+
 
 
               {formData.language && formData.type && formData.mode && (
@@ -260,16 +276,16 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                       const selectedCourse = courses.find(
                         (c) =>
                           c.id === selectedId &&
-                          c.language === formData.language &&
-                          c.type === formData.type &&
-                          c.mode === formData.mode
+                          c.language?.toLowerCase().trim() === formData.language?.toLowerCase().trim() &&
+                          c.type?.toLowerCase().trim() === formData.type?.toLowerCase().trim() &&
+                          c.mode?.toLowerCase().trim() === formData.mode?.toLowerCase().trim()
                       );
 
-                      setFormData({
-                        ...formData,
+                      setFormData(prev => ({
+                        ...prev,
                         course_id: selectedId,
-                        duration: selectedCourse?.duration || 6,
-                      });
+                        duration: selectedCourse?.duration || 6
+                      }));
                     }}
                     required
                   >
@@ -277,9 +293,9 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                     {courses
                       .filter(
                         (c) =>
-                          c.language === formData.language &&
-                          c.type === formData.type &&
-                          c.mode === formData.mode
+                          c.language?.toLowerCase().trim() === formData.language?.toLowerCase().trim() &&
+                          c.type?.toLowerCase().trim() === formData.type?.toLowerCase().trim() &&
+                          c.mode?.toLowerCase().trim() === formData.mode?.toLowerCase().trim()
                       )
                       .map((course) => (
                         <option key={course.id} value={course.id}>
