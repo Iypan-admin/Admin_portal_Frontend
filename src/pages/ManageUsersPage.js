@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "../components/Navbar";
-import { 
-  createUser, 
-  getAllUsers, 
-  deleteUser, 
-  editUser, 
-  assignTeacher, 
+import {
+  createUser,
+  getAllUsers,
+  deleteUser,
+  editUser,
+  assignTeacher,
   assignAcademicCoordinator,
   assignManager,
   assignFinancialPartner
@@ -64,6 +64,7 @@ const ManageUsersPage = () => {
             <option value="state">State</option>
             <option value="center">Center</option>
             <option value="teacher">Teacher</option>
+            <option value="cardadmin">cardadmin</option>
           </>
         );
       case "manager":
@@ -106,7 +107,7 @@ const ManageUsersPage = () => {
       if (debouncedSearchTerm) {
         searchParams.search = debouncedSearchTerm;
       }
-      
+
       // Role-specific filtering
       if (role === "academic") {
         searchParams.role = "teacher";
@@ -193,36 +194,36 @@ const ManageUsersPage = () => {
 
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) {
-        return;
+      return;
     }
 
     try {
-        setError(null);
-        setLoading(true);
+      setError(null);
+      setLoading(true);
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-            throw new Error("No authentication token found");
-        }
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
 
-        await deleteUser(userId);
-        
-        // Show success message
-        alert("User deleted successfully");
-        
-        // Refresh the users list after successful deletion
-        await fetchUsers();
-        
+      await deleteUser(userId);
+
+      // Show success message
+      alert("User deleted successfully");
+
+      // Refresh the users list after successful deletion
+      await fetchUsers();
+
     } catch (error) {
-        console.error("Delete user error:", error);
-        setError(typeof error === 'string' ? error : error.message || "Failed to delete user");
-        
-        // Show error message to user
-        alert("Failed to delete user: " + (error.message || "Unknown error occurred"));
+      console.error("Delete user error:", error);
+      setError(typeof error === 'string' ? error : error.message || "Failed to delete user");
+
+      // Show error message to user
+      alert("Failed to delete user: " + (error.message || "Unknown error occurred"));
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const handleFilterRoleChange = (value) => {
     setFilterRole(value);
@@ -468,11 +469,10 @@ const ManageUsersPage = () => {
                               </td>
                               <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <span
-                                  className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                                    user.status
-                                      ? "bg-green-100 text-green-800"
-                                      : "bg-red-100 text-red-800"
-                                  }`}
+                                  className={`px-2 py-1 text-xs font-semibold rounded-full ${user.status
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                    }`}
                                 >
                                   {user.status
                                     ? "Active"
@@ -490,16 +490,16 @@ const ManageUsersPage = () => {
                                   {( // Allow both admin and manager to assign state/center admins
                                     ((role === 'manager' || role === 'admin') && !user.status && (user.role === 'state' || user.role === 'center'))
                                   ) && (
-                                    <button
-                                      className="text-green-600 hover:text-green-900 transition duration-200"
-                                      onClick={() => {
-                                        setSelectedUser(user);
-                                        setShowAssignAdminModal(true);
-                                      }}
-                                    >
-                                      Assign
-                                    </button>
-                                  )}
+                                      <button
+                                        className="text-green-600 hover:text-green-900 transition duration-200"
+                                        onClick={() => {
+                                          setSelectedUser(user);
+                                          setShowAssignAdminModal(true);
+                                        }}
+                                      >
+                                        Assign
+                                      </button>
+                                    )}
                                   {role === 'admin' && !user.status && user.role === 'academic' && (
                                     <button
                                       className="text-green-600 hover:text-green-900 transition duration-200"
@@ -620,7 +620,7 @@ const ManageUsersPage = () => {
           academicId={selectedAcademicId}
         />
       )}
-      
+
       {showAssignManagerModal && (
         <AssignManagerModal
           onClose={() => {

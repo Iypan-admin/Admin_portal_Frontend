@@ -117,9 +117,6 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
     }
   }, [formData.center, formData.language, formData.type, centers]);
 
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -262,9 +259,6 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                 </div>
               )}
 
-
-
-
               {formData.language && formData.type && formData.mode && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
@@ -305,8 +299,6 @@ const CreateBatchModal = ({ onClose, onSubmit }) => {
                   </select>
                 </div>
               )}
-
-
 
               {/* Duration */}
               <div>
