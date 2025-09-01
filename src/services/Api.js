@@ -2,19 +2,19 @@
 
 // Define different backend URLs for each service
 const AUTH_API_URL = "https://auth.iypan.com"; // For login/authentication
-const USER_API_URL = "https://role.iypan.com"; // For user creation and deletion
-const LIST_API_URL = "https://listing.iypan.com/api"; // For listing services  
+// const USER_API_URL = "https://role.iypan.com"; // For user creation and deletion
+// const LIST_API_URL = "https://listing.iypan.com/api"; // For listing services  
 const ASSIGN_API_URL = "https://assign.iypan.com"; // For Assigning services
-const FINANCE_API_URL = "https://financial.iypan.com/api/financial" // For Financial services
+// const FINANCE_API_URL = "https://financial.iypan.com/api/financial" // For Financial services
 const BATCHES_URL = "https://academic.iypan.com/api/batches"; // For Academic (Batch) services
 const GMEETS_API_URL = "https://academic.iypan.com/api/gmeets"; // For Academic (GMeet) services
 const NOTES_API_URL = "https://academic.iypan.com/api/notes"; // For Academic (Note) services
 const COURSES_API_URL = "https://academic.iypan.com/api/courses/"; // For Academic (Course) services
 const CHAT_API_URL = "https://chat.iypan.com"; // For Chat services
 
-// const USER_API_URL = "http://localhost:3001";
-// const LIST_API_URL = "http://localhost:3008/api";
-// const FINANCE_API_URL = "http://localhost:3007/api/financial";
+const USER_API_URL = "http://localhost:3001";
+const LIST_API_URL = "http://localhost:3008/api";
+const FINANCE_API_URL = "http://localhost:3007/api/financial";
 // const ASSIGN_API_URL = "http://localhost:3002";
 // const BATCHES_URL = "http://localhost:3005/api/batches";
 // const GMEETS_API_URL = "http://localhost:3005/api/gmeets";
@@ -841,6 +841,98 @@ export const submitInfluencer = async (formData) => {
     if (!res.ok) throw new Error(data.error || "Failed to submit influencer");
     return data;
 };
+// ✅ Get all pending elite cards (Card Admin verification list)
+export const getPendingEliteCards = async (token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/card-admin/pending`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || `Error ${response.status}`);
+        }
+
+        return result.cards; // backend la {cards: [...]} return pannum nu assume panniruken
+    } catch (error) {
+        console.error("Error fetching pending elite cards:", error);
+        throw error;
+    }
+};
+
+// ✅ Approve elite card
+export const approveEliteCard = async (id, token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/card-admin/approve/${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || `Error ${response.status}`);
+        }
+
+        return result;
+    } catch (error) {
+        console.error("Error approving elite card:", error);
+        throw error;
+    }
+};
+
+// ✅ Reject elite card
+export const rejectEliteCard = async (id, token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/card-admin/reject/${id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || `Error ${response.status}`);
+        }
+
+        return result;
+    } catch (error) {
+        console.error("Error rejecting elite card:", error);
+        throw error;
+    }
+};
+
+// ✅ Get all approved elite cards
+export const getApprovedEliteCards = async (token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/card-admin/approved`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || `Error ${response.status}`);
+        }
+
+        return result.cards;
+    } catch (error) {
+        console.error("Error fetching approved elite cards:", error);
+        throw error;
+    }
+};
+
 // ----------------------
 // Role Assigning Service Functions
 // ----------------------
@@ -1144,17 +1236,117 @@ export const editTransactionDuration = async (transaction_id, new_duration) => {
         throw error;
     }
 };
-export const fetchPendingCards = async () => {
-    const res = await fetch(`${FINANCE_API_URL}/pending`);
-    return await res.json();
+
+export const getPendingElitePayments = async () => {
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/elite-payments/pending-approvals`);
+        if (!res.ok) throw new Error("Failed to fetch pending elite payments");
+
+        const json = await res.json();
+        return Array.isArray(json.data) ? json.data : []; // return only array
+    } catch (error) {
+        console.error("Error fetching pending elite payments:", error);
+        return []; // fallback empty array so .map won't crash
+    }
 };
 
-export const approveCardById = async (id) => {
-    const res = await fetch(`${FINANCE_API_URL}/approve/${id}`, {
-        method: "PATCH",
-    });
-    return await res.json();
+
+// 🔹 Approve elite payment
+export const approveElitePayment = async (id) => {
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/elite-payments/${id}/approve`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) throw new Error("Failed to approve payment");
+        return await res.json();
+    } catch (error) {
+        console.error("Error approving payment:", error);
+        throw error;
+    }
 };
+
+// 🔹 Decline elite payment
+export const declineElitePayment = async (id) => {
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/elite-payments/${id}/decline`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) throw new Error("Failed to decline payment");
+        return await res.json();
+    } catch (error) {
+        console.error("Error declining payment:", error);
+        throw error;
+    }
+};
+// 🔹 Get all pending/approved/declined giveaways
+export const getPendingGiveaways = async () => {
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/giveaways/pending-approvals`);
+        if (!res.ok) throw new Error("Failed to fetch pending giveaways");
+
+        const json = await res.json();
+        return Array.isArray(json.data) ? json.data : []; // return only array
+    } catch (error) {
+        console.error("Error fetching pending giveaways:", error);
+        return []; // fallback empty array so .map won't crash
+    }
+};
+
+// 🔹 Approve giveaway
+export const approveGiveaway = async (id) => {
+    if (!id) throw new Error("Giveaway ID is required");
+
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/giveaways/${id}/approve`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        // Some APIs return 204 No Content
+        let data = null;
+        if (res.status !== 204) {
+            try {
+                data = await res.json();
+            } catch {
+                data = null;
+            }
+        }
+
+        if (!res.ok) {
+            const message = data?.error || data?.message || "Failed to approve giveaway";
+            throw new Error(message);
+        }
+
+        return data;
+    } catch (error) {
+        console.error(`Error approving giveaway [ID: ${id}]:`, error.message);
+        throw error;
+    }
+};
+
+
+export const declineGiveaway = async (id) => {
+    try {
+        const res = await fetch(`${FINANCE_API_URL}/giveaways/${id}/decline`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            const message = data?.error || "Failed to decline giveaway";
+            throw new Error(message);
+        }
+        return data;
+    } catch (error) {
+        console.error(`Error declining giveaway [ID: ${id}]:`, error.message);
+        throw error;
+    }
+};
+
 
 // ----------------------
 // Academic Service Functions
@@ -1859,61 +2051,117 @@ export const editStateName = async (data, token) => {
 };
 
 
+// =========================
+// 📌 GIVEAWAY API
+// =========================
+// =========================
+// 📌 GIVEAWAY / CARD UPLOAD API
+// =========================
 
-export const uploadCSVData = async (file) => {
+// ✅ Upload Giveaway CSV
+export const uploadGiveawayCSV = async (file) => {
     try {
         const formData = new FormData();
-        formData.append("file", file); // ✅ Must match multer upload.single("file")
+        formData.append("file", file); // multer upload.single("file")
 
         const response = await fetch(`${LIST_API_URL}/cards/upload`, {
-            method: 'POST',
-            body: formData, // ✅ Don't manually set Content-Type for FormData
+            method: "POST",
+            body: formData, // ❌ Don’t set headers manually
         });
 
-        const result = await response.json();
-        return result;
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status}`);
+        }
+
+        return await response.json();
     } catch (error) {
-        console.error('Upload API error:', error);
+        console.error("Upload Giveaway API error:", error);
+        throw error;
+    }
+};
+
+// ✅ Manual Single Insert Giveaway
+export const addGiveawayManual = async (entry) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/cards/manual`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(entry),
+        });
+
+        const data = await response.json(); // 👈 parse pannunga
+
+        if (!response.ok || data.error) {   // 👈 error / status check
+            throw new Error(data.error || data.message || "Manual insert failed");
+        }
+
+        return data; // ✅ backend response pass pannudhu
+    } catch (error) {
+        console.error("Add Giveaway Manual API error:", error);
         throw error;
     }
 };
 
 
-
-export const getAllCardData = async () => {
+// ✅ Get All Giveaways
+export const getAllGiveaways = async () => {
     try {
         const response = await fetch(`${LIST_API_URL}/cards`);
-        const result = await response.json();
-        return result;
+        if (!response.ok) throw new Error("Failed to fetch giveaways");
+        return await response.json();
     } catch (error) {
-        console.error('Get API error:', error);
+        console.error("Get Giveaways API error:", error);
         throw error;
     }
 };
-export const fetchCardStats = async () => {
+
+
+// =========================
+// 📌 CARD API (elite_card_generate)
+// =========================
+
+// ✅ Get Card Stats (total, pending, active)
+export const getCardStats = async () => {
     try {
         const response = await fetch(`${LIST_API_URL}/cards/stats`);
-
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const result = await response.json();
-        return result; // Expected: { total, active, inactive }
+
+        return {
+            total: result.total || 0,
+            pending: result.pending || 0,
+            active: result.active || 0,
+        };
     } catch (error) {
-        console.error("Fetch card stats error:", error);
+        console.error("Fetch Card Stats API error:", error);
         throw error;
     }
 };
-export const fetchRecentInactiveCards = async () => {
+
+// ✅ Get Only Recent Pending Cards (latest 2)
+export const getRecentPendingCards = async () => {
     try {
-        const response = await fetch(`${LIST_API_URL}/cards/recent-inactive`);
-        if (!response.ok) throw new Error("Failed to fetch recent cards");
-        return await response.json();
+        const response = await fetch(`${LIST_API_URL}/cards/recent-pending`);
+        if (!response.ok) throw new Error("Failed to fetch recent pending cards");
+
+        const data = await response.json();
+
+        // Already filtered by status = "card_generated" in backend
+        return data.map(item => ({
+            name: item.name_on_the_pass,
+            email: item.email,
+            card_number: item.card_number,
+            card_name: item.card_name,
+            status: item.status,
+            created_at: item.created_at,
+        }));
     } catch (error) {
-        console.error("Fetch recent inactive cards error:", error);
+        console.error("Fetch Recent Pending Cards API error:", error);
         throw error;
     }
 };
-
-

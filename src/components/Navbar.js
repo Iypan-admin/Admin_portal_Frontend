@@ -136,7 +136,7 @@ const Navbar = ({ showCenterViewOptions, selectedCenter }) => {
         },
         {
           path: "/approve-students",
-          name: "Approve Payments",
+          name: "Student Fees Payment Approval",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -150,14 +150,28 @@ const Navbar = ({ showCenterViewOptions, selectedCenter }) => {
         },
         {
           path: "/approve-card",
-          name: "Approve Cards",
+          name: "Elite Pass Payment Approval",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                d="M5 13l4 4L19 7"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          ),
+        },
+        {
+          path: "/approve-Giveaway",
+          name: "Elite Pass Giveaway Approval",
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
           ),
@@ -394,25 +408,25 @@ const Navbar = ({ showCenterViewOptions, selectedCenter }) => {
             </svg>
           ),
         },
-        {
-          path: "/generate-card",
-          name: "Generate card",
-          icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <rect
-                x="2" y="7" width="20" height="10" rx="2" ry="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-              />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 11h20" />
-            </svg>
-          ),
-        },
+        // {
+        //   path: "/generate-card",
+        //   name: "Generate card",
+        //   icon: (
+        //     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        //       <rect
+        //         x="2" y="7" width="20" height="10" rx="2" ry="2"
+        //         strokeLinecap="round"
+        //         strokeLinejoin="round"
+        //         strokeWidth="2"
+        //       />
+        //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 11h20" />
+        //     </svg>
+        //   ),
+        // },
 
         {
           path: "/activate-card",
-          name: "Activate card",
+          name: "Giveway Pass Entry",
           icon: (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <circle
@@ -425,8 +439,20 @@ const Navbar = ({ showCenterViewOptions, selectedCenter }) => {
             </svg>
           ),
         },
-
-
+        {
+          path: "/elite-card-payments",
+          name: "Generate card",
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2v-8c0-1.1-.9-2-2-2zM6 8c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2v-8c0-1.1-.9-2-2-2zM18 8c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2s2-.9 2-2v-8c0-1.1-.9-2-2-2z"
+              />
+            </svg>
+          ),
+        },
       ]
 
 

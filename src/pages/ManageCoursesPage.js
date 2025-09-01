@@ -25,7 +25,7 @@ const ManageCoursesPage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const response = await getAllCourses(token);
-      
+
       // Check if response has the expected structure
       if (response && response.success && Array.isArray(response.data)) {
         setCourses(response.data);
@@ -46,17 +46,17 @@ const ManageCoursesPage = () => {
 
   const handleCreateCourse = async (e) => {
     e.preventDefault();
-    
+
     // Prevent multiple submissions
     if (submitting) return;
-    
+
     try {
       setSubmitting(true);
       setError(null);
-      
+
       const token = localStorage.getItem('token');
       await createCourse(formData, token);
-      
+
       setShowCreateModal(false);
       setFormData({
         course_name: '',
@@ -67,7 +67,7 @@ const ManageCoursesPage = () => {
         mode: '',
         duration: ''
       });
-      
+
       // Refresh the courses list
       fetchCourses();
     } catch (error) {
@@ -95,30 +95,30 @@ const ManageCoursesPage = () => {
 
   const handleUpdateCourse = async (e) => {
     e.preventDefault();
-    
+
     // Prevent multiple submissions
     if (submitting) return;
-    
+
     try {
       setSubmitting(true);
       setError(null);
-      
+
       const token = localStorage.getItem('token');
       await updateCourse(editingCourse.id, formData, token);
-      
+
       setShowCreateModal(false);
       setIsEditMode(false);
       setEditingCourse(null);
       setFormData({
         course_name: '',
         program: '',
-        type: 'Regular',
+        type: '',
         language: '',
         level: '',
         mode: '',
         duration: ''
       });
-      
+
       fetchCourses();
     } catch (error) {
       console.error('Error updating course:', error);
@@ -202,11 +202,10 @@ const ManageCoursesPage = () => {
                               <tr key={course.id} className="hover:bg-gray-50">
                                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{course.course_name}</td>
                                 <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    course.type === 'Immersion' 
-                                      ? 'bg-blue-100 text-blue-800' 
-                                      : 'bg-green-100 text-green-800'
-                                  }`}>
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${course.type === 'Immersion'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-green-100 text-green-800'
+                                    }`}>
                                     {course.type}
                                   </span>
                                 </td>
@@ -241,22 +240,35 @@ const ManageCoursesPage = () => {
       </div>
 
       {showCreateModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg p-4 sm:p-6 md:p-8 w-full max-w-md mx-auto">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg p-4 sm:p-6 md:p-8 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">{isEditMode ? 'Edit Course' : 'Create New Course'}</h2>
+              <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-800">
+                {isEditMode ? "Edit Course" : "Create New Course"}
+              </h2>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
-            
+
             <form onSubmit={isEditMode ? handleUpdateCourse : handleCreateCourse}>
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Course Name *</label>
                   <input
@@ -267,7 +279,7 @@ const ManageCoursesPage = () => {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Program *</label>
                   <input
@@ -281,25 +293,34 @@ const ManageCoursesPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Type *</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  <select
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-white"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     required
-                  />
+                  >
+                    <option value="">Select Type</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Fast Track">Fast Track</option>
+                  </select>
                 </div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Language *</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  <select
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-white"
                     value={formData.language}
                     onChange={(e) => setFormData({ ...formData, language: e.target.value })}
                     required
-                  />
+                  >
+                    <option value="">Select Language</option>
+                    <option value="FRENCH">FRENCH</option>
+                    <option value="GERMAN">GERMAN</option>
+                    <option value="JAPANESE">JAPANESE</option>
+                  </select>
                 </div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Level *</label>
@@ -314,14 +335,18 @@ const ManageCoursesPage = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Mode *</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                  <select
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-white"
                     value={formData.mode}
                     onChange={(e) => setFormData({ ...formData, mode: e.target.value })}
                     required
-                  />
+                  >
+                    <option value="">Select Mode</option>
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                  </select>
                 </div>
+
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Duration (months) *</label>
@@ -334,9 +359,11 @@ const ManageCoursesPage = () => {
                     required
                   />
                 </div>
+
               </div>
 
-              <div className="mt-6 flex justify-end gap-3">
+              {/* ✅ Responsive button layout */}
+              <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -344,43 +371,59 @@ const ManageCoursesPage = () => {
                     setIsEditMode(false);
                     setEditingCourse(null);
                     setFormData({
-                      course_name: '',
-                      program: '',
-                      type: 'Regular',
-                      language: '',
-                      level: '',
-                      mode: '',
-                      duration: ''
+                      course_name: "",
+                      program: "",
+                      type: "Regular",
+                      language: "",
+                      level: "",
+                      mode: "",
+                      duration: "",
                     });
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`px-4 py-2 ${
-                    submitting ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
-                  } text-white rounded-md transition-colors`}
+                  className={`w-full sm:w-auto px-4 py-2 ${submitting ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"
+                    } text-white rounded-md transition-colors`}
                 >
                   {submitting ? (
                     <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 
+                  5.291A7.962 7.962 0 014 12H0c0 3.042 
+                  1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
-                      {isEditMode ? 'Updating...' : 'Creating...'}
+                      {isEditMode ? "Updating..." : "Creating..."}
                     </span>
                   ) : (
-                    <>{isEditMode ? 'Update Course' : 'Create Course'}</>
+                    <>{isEditMode ? "Update Course" : "Create Course"}</>
                   )}
                 </button>
               </div>
             </form>
-            
           </div>
         </div>
+
       )}
     </div>
   );

@@ -383,7 +383,7 @@ const ManageUsersPage = () => {
                     {role === "academic" ? "Add Teacher" : "Create User"}
                   </button>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <div className="flex flex-col md:flex-row gap-3 w-full">
                   <input
                     type="text"
                     placeholder="Search users..."
@@ -413,27 +413,42 @@ const ManageUsersPage = () => {
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
-                          <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/4">
+                          {/* Full Name - hidden on mobile */}
+                          <th className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
+                            Full Name
+                          </th>
+
+                          {/* Username */}
+                          <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
                             Username
                           </th>
-                          <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/6">
+
+                          {/* Role */}
+                          <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                             Role
                           </th>
-                          <th scope="col" className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/4">
+
+                          {/* Created At - hidden on mobile */}
+                          <th className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4">
                             Created At
                           </th>
-                          <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-1/6">
+
+                          {/* Status - hidden on mobile */}
+                          <th className="hidden md:table-cell px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                             Status
                           </th>
-                          <th scope="col" className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 w-auto">
+
+                          {/* Actions */}
+                          <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-auto">
                             Actions
                           </th>
                         </tr>
                       </thead>
+
                       <tbody className="bg-white divide-y divide-gray-200">
                         {loading ? (
                           <tr>
-                            <td colSpan="5" className="px-4 sm:px-6 py-8 text-center">
+                            <td colSpan="6" className="px-4 sm:px-6 py-8 text-center">
                               <div className="flex justify-center items-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                               </div>
@@ -441,10 +456,20 @@ const ManageUsersPage = () => {
                           </tr>
                         ) : getFilteredUsers().length === 0 ? (
                           <tr>
-                            <td colSpan="5" className="px-4 sm:px-6 py-8 text-center text-gray-500">
+                            <td colSpan="6" className="px-4 sm:px-6 py-8 text-center text-gray-500">
                               <div className="flex flex-col items-center justify-center space-y-2">
-                                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                <svg
+                                  className="w-12 h-12 text-gray-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                  />
                                 </svg>
                                 <p>No users found</p>
                               </div>
@@ -452,105 +477,130 @@ const ManageUsersPage = () => {
                           </tr>
                         ) : (
                           getFilteredUsers().map((user) => (
-                            <tr
-                              key={user.id}
-                              className="hover:bg-gray-50"
-                            >
+                            <tr key={user.id} className="hover:bg-gray-50">
+                              {/* Full name - hidden on mobile */}
+                              <td className="hidden md:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate max-w-[150px] sm:max-w-xs">
+                                {user.full_name}
+                              </td>
+
+                              {/* Username */}
                               <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 truncate max-w-[150px] sm:max-w-xs">
                                 {user.name}
                               </td>
+
+                              {/* Role */}
                               <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 inline-block">
                                   {user.role}
                                 </span>
                               </td>
+
+                              {/* Created At - hidden on mobile */}
                               <td className="hidden md:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {new Date(user.created_at).toLocaleString()}
                               </td>
-                              <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+
+                              {/* Status - hidden on mobile */}
+                              <td className="hidden md:table-cell px-4 sm:px-6 py-4 whitespace-nowrap">
                                 <span
                                   className={`px-2 py-1 text-xs font-semibold rounded-full ${user.status
                                     ? "bg-green-100 text-green-800"
                                     : "bg-red-100 text-red-800"
                                     }`}
                                 >
-                                  {user.status
-                                    ? "Active"
-                                    : "Inactive"}
+                                  {user.status ? "Active" : "Inactive"}
                                 </span>
                               </td>
+
+                              {/* Actions */}
                               <td className="px-3 sm:px-4 py-4 whitespace-nowrap text-sm font-medium">
-                                <div className="flex flex-wrap gap-1 sm:gap-2">
+                                <div className="flex flex-wrap gap-2">
+                                  {/* Edit */}
                                   <button
-                                    className="text-blue-600 hover:text-blue-900 transition duration-200"
+                                    className="px-2 py-1 rounded bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs"
                                     onClick={() => handleEditUser(user)}
                                   >
-                                    Edit
+                                    ✏️ Edit
                                   </button>
-                                  {( // Allow both admin and manager to assign state/center admins
-                                    ((role === 'manager' || role === 'admin') && !user.status && (user.role === 'state' || user.role === 'center'))
-                                  ) && (
+
+                                  {/* Assign (conditions) */}
+                                  {(role === "manager" || role === "admin") &&
+                                    !user.status &&
+                                    (user.role === "state" || user.role === "center") && (
                                       <button
-                                        className="text-green-600 hover:text-green-900 transition duration-200"
+                                        className="px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 text-xs"
                                         onClick={() => {
                                           setSelectedUser(user);
                                           setShowAssignAdminModal(true);
                                         }}
                                       >
-                                        Assign
+                                        ✅ Assign
                                       </button>
                                     )}
-                                  {role === 'admin' && !user.status && user.role === 'academic' && (
-                                    <button
-                                      className="text-green-600 hover:text-green-900 transition duration-200"
-                                      onClick={() => {
-                                        setSelectedAcademicId(user.id);
-                                        setShowAssignAcademicModal(true);
-                                      }}
-                                    >
-                                      Assign
-                                    </button>
-                                  )}
-                                  {role === 'admin' && !user.status && user.role === 'manager' && (
-                                    <button
-                                      className="text-green-600 hover:text-green-900 transition duration-200"
-                                      onClick={() => {
-                                        setSelectedManagerId(user.id);
-                                        setShowAssignManagerModal(true);
-                                      }}
-                                    >
-                                      Assign
-                                    </button>
-                                  )}
-                                  {role === 'admin' && !user.status && user.role === 'financial' && (
-                                    <button
-                                      className="text-green-600 hover:text-green-900 transition duration-200"
-                                      onClick={() => {
-                                        setSelectedFinancialId(user.id);
-                                        setShowAssignFinancialModal(true);
-                                      }}
-                                    >
-                                      Assign
-                                    </button>
-                                  )}
-                                  {role === 'academic' && user.role === 'teacher' && !user.status && (
-                                    <button
-                                      className="text-green-600 hover:text-green-900 transition duration-200"
-                                      onClick={() => {
-                                        setSelectedTeacherId(user.id);
-                                        setShowAssignModal(true);
-                                      }}
-                                    >
-                                      Assign
-                                    </button>
-                                  )}
-                                  {/* Only show Delete button if user is inactive */}
+
+                                  {role === "admin" &&
+                                    !user.status &&
+                                    user.role === "academic" && (
+                                      <button
+                                        className="px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 text-xs"
+                                        onClick={() => {
+                                          setSelectedAcademicId(user.id);
+                                          setShowAssignAcademicModal(true);
+                                        }}
+                                      >
+                                        ✅ Assign
+                                      </button>
+                                    )}
+
+                                  {role === "admin" &&
+                                    !user.status &&
+                                    user.role === "manager" && (
+                                      <button
+                                        className="px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 text-xs"
+                                        onClick={() => {
+                                          setSelectedManagerId(user.id);
+                                          setShowAssignManagerModal(true);
+                                        }}
+                                      >
+                                        ✅ Assign
+                                      </button>
+                                    )}
+
+                                  {role === "admin" &&
+                                    !user.status &&
+                                    user.role === "financial" && (
+                                      <button
+                                        className="px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 text-xs"
+                                        onClick={() => {
+                                          setSelectedFinancialId(user.id);
+                                          setShowAssignFinancialModal(true);
+                                        }}
+                                      >
+                                        ✅ Assign
+                                      </button>
+                                    )}
+
+                                  {role === "academic" &&
+                                    user.role === "teacher" &&
+                                    !user.status && (
+                                      <button
+                                        className="px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 text-xs"
+                                        onClick={() => {
+                                          setSelectedTeacherId(user.id);
+                                          setShowAssignModal(true);
+                                        }}
+                                      >
+                                        ✅ Assign
+                                      </button>
+                                    )}
+
+                                  {/* Delete (only inactive users) */}
                                   {!user.status && (
                                     <button
-                                      className="text-red-600 hover:text-red-900 transition duration-200"
+                                      className="px-2 py-1 rounded bg-red-100 text-red-700 hover:bg-red-200 text-xs"
                                       onClick={() => handleDeleteUser(user.id)}
                                     >
-                                      Delete
+                                      🗑 Delete
                                     </button>
                                   )}
                                 </div>
@@ -563,6 +613,7 @@ const ManageUsersPage = () => {
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>

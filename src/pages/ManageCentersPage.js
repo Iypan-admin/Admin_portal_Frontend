@@ -37,7 +37,10 @@ const ManageCentersPage = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await editCenterName({ centerId: selectedCenter.center_id, newCenterName }, token);
+      await editCenterName(
+        { centerId: selectedCenter.center_id, newCenterName },
+        token
+      );
       setShowEditModal(false);
       fetchCenters();
     } catch (error) {
@@ -60,8 +63,12 @@ const ManageCentersPage = () => {
               <div className="mb-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                   <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Manage Centers</h1>
-                    <p className="mt-2 text-gray-600">View and manage centers in your organization</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                      Manage Centers
+                    </h1>
+                    <p className="mt-2 text-gray-600">
+                      View and manage centers in your organization
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowCreateModal(true)}
@@ -96,66 +103,93 @@ const ManageCentersPage = () => {
                 <div className="flex justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
+              ) : centers.length === 0 ? (
+                <div className="bg-white rounded-lg shadow p-6 text-center">
+                  <svg
+                    className="w-12 h-12 text-gray-400 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
+                  </svg>
+                  <p className="mt-2">No centers found</p>
+                </div>
               ) : (
                 <div className="bg-white rounded-lg shadow overflow-hidden">
-                  <div className="overflow-x-auto">
+                  {/* Desktop Table */}
+                  <div className="hidden sm:block overflow-x-auto">
                     <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50 sticky top-0 z-10">
                           <tr>
-                            <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Center Name
                             </th>
-                            <th scope="col" className="hidden sm:table-cell px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
-                              State
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Mode
                             </th>
-                            <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Center Admin
                             </th>
-                            <th scope="col" className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Actions
                             </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                          {centers.length === 0 ? (
-                            <tr>
-                              <td colSpan="4" className="px-3 sm:px-6 py-4 text-center text-sm text-gray-500">
-                                <div className="flex flex-col items-center py-6">
-                                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                  </svg>
-                                  <p className="mt-2">No centers found</p>
-                                </div>
+                          {centers.map((center) => (
+                            <tr key={center.center_id} className="hover:bg-gray-50">
+                              <td className="px-3 sm:px-6 py-4 text-sm font-medium text-gray-900 truncate max-w-[150px]">
+                                {center.center_name}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 text-sm text-gray-500">
+                                {center.state?.state_name || "Not Assigned"}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 text-sm text-gray-500">
+                                {center.center_admin?.name || "Not Assigned"}
+                              </td>
+                              <td className="px-3 sm:px-6 py-4 text-sm text-gray-500">
+                                <button
+                                  onClick={() => handleEdit(center)}
+                                  className="text-blue-600 hover:text-blue-900"
+                                >
+                                  Edit
+                                </button>
                               </td>
                             </tr>
-                          ) : (
-                            centers.map((center) => (
-                              <tr key={center.center_id} className="hover:bg-gray-50">
-                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 truncate max-w-[150px] sm:max-w-none">
-                                  {center.center_name}
-                                </td>
-                                <td className="hidden sm:table-cell px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {center.state?.state_name || 'Not Assigned'}
-                                </td>
-                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  {center.center_admin?.name || 'Not Assigned'}
-                                </td>
-                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                  <button
-                                    onClick={() => handleEdit(center)}
-                                    className="text-blue-600 hover:text-blue-900"
-                                  >
-                                    Edit
-                                  </button>
-                                </td>
-                              </tr>
-                            ))
-                          )}
+                          ))}
                         </tbody>
                       </table>
                     </div>
+                  </div>
+
+                  {/* Mobile Cards */}
+                  <div className="sm:hidden divide-y divide-gray-200">
+                    {centers.map((center) => (
+                      <div key={center.center_id} className="p-4">
+                        <p className="text-sm font-bold text-gray-900">
+                          {center.center_name}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Mode: {center.state?.state_name || "Not Assigned"}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Admin: {center.center_admin?.name || "Not Assigned"}
+                        </p>
+                        <button
+                          onClick={() => handleEdit(center)}
+                          className="mt-2 text-blue-600 hover:text-blue-900 text-sm"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -164,6 +198,7 @@ const ManageCentersPage = () => {
         </div>
       </div>
 
+      {/* Create Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
           <CreateCenterModal
@@ -176,13 +211,16 @@ const ManageCentersPage = () => {
         </div>
       )}
 
+      {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Edit Center Name</h2>
             <form onSubmit={handleEditSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">New Center Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  New Center Name
+                </label>
                 <input
                   type="text"
                   value={newCenterName}

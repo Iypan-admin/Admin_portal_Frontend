@@ -29,8 +29,10 @@ import CardAdminPage from "./pages/CardAdminPage";
 import GenerateCardPage from "./pages/GenerateCardPage";
 import ActivateCardPage from "./pages/ActivateCardPage";
 import ApprovedCardPage from './pages/ApprovedCardPage';
+import ApprovedGiveawayCardPage from './pages/ApprovedGiveawayPage';
 import ViewCenterEliteCard from "./pages/ViewCenterEliteCard";
 import InfluencerOnboardingPage from "./pages/InfluencerOnboardingPage";
+import EliteCardPaymentsPage from "./pages/EliteCardPaymentsPage";
 
 
 
@@ -211,6 +213,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRole="financial">
                   <ApprovedCardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/approve-Giveaway"
+              element={
+                <ProtectedRoute allowedRole="financial">
+                  <ApprovedGiveawayCardPage />
                 </ProtectedRoute>
               }
             />
@@ -431,6 +441,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRole="cardadmin">
                   <InfluencerOnboardingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/elite-card-payments"
+              element={
+                <ProtectedRoute allowedRole="cardadmin">
+                  <EliteCardPaymentsPage />
                 </ProtectedRoute>
               }
             />
