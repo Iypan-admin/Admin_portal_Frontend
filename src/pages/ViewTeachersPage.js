@@ -21,7 +21,7 @@ function ViewTeachersPage() {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           throw new Error('Authentication token not found');
         }
@@ -36,7 +36,7 @@ function ViewTeachersPage() {
 
         // Extract the first center from the array
         const center = centerResponse.data?.[0];
-        
+
         if (!center || !center.center_id) {
           throw new Error('No center found for this admin');
         }
@@ -44,6 +44,7 @@ function ViewTeachersPage() {
         // Then fetch teachers for this center
         const teachersResponse = await getTeachersByCenter(center.center_id, token);
         console.log('Teachers Response:', teachersResponse); // Debug log
+        console.log("Teachers Data:", teachersResponse.data);
 
         if (!teachersResponse || !teachersResponse.success) {
           throw new Error(teachersResponse?.message || 'Failed to fetch teachers data');
@@ -76,8 +77,8 @@ function ViewTeachersPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      <Navbar 
-        showCenterViewOptions={!!selectedCenter} 
+      <Navbar
+        showCenterViewOptions={!!selectedCenter}
         selectedCenter={selectedCenter}
       />
       <div className="flex-1 lg:ml-64">
@@ -119,6 +120,9 @@ function ViewTeachersPage() {
                               Name
                             </th>
                             <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              User Name
+                            </th>
+                            <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                               Joined Date
                             </th>
                           </tr>
@@ -126,6 +130,12 @@ function ViewTeachersPage() {
                         <tbody className="bg-white divide-y divide-gray-200">
                           {teachers.map((teacher) => (
                             <tr key={teacher.teacher_id} className="hover:bg-gray-50">
+                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                                  {teacher.teacher_full_name}
+
+                                </div>
+                              </td>
                               <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                 <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
                                   {teacher.teacher_name}

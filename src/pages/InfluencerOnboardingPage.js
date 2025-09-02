@@ -1,14 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { getInfluencerCount, getAllInfluencers, submitInfluencer } from "../services/Api";
 
+
 const InfluencerOnboardingPage = () => {
-    const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-    const [confirmed, setConfirmed] = useState(false);
     const [totalInfluencers, setTotalInfluencers] = useState(0);
     const [influencers, setInfluencers] = useState([]);
     const [loading, setLoading] = useState(false);
-    const confirmRef = useRef(null);
+
+    // Modal states
+    const [showModal, setShowModal] = useState(false);
+    const [formData, setFormData] = useState({ name: "", email: "", phone: "", role: "" });
+    const [step, setStep] = useState("form"); // "form" | "confirm"
 
     useEffect(() => {
         fetchInfluencerData();
@@ -31,15 +34,12 @@ const InfluencerOnboardingPage = () => {
     };
 
     const handleConfirm = () => {
-        const { name, email, phone } = formData;
-        if (!name || !email || !phone) {
-            alert("Please fill all the fields");
+        const { name, email, phone, role } = formData;
+        if (!name || !email || !phone || !role) {
+            alert("⚠️ Please fill all the fields");
             return;
         }
-        setConfirmed(true);
-        setTimeout(() => {
-            confirmRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
+        setStep("confirm");
     };
 
     const handleSubmit = async () => {
@@ -47,8 +47,9 @@ const InfluencerOnboardingPage = () => {
             setLoading(true);
             await submitInfluencer(formData);
             alert("✅ Mail sent to " + formData.email);
-            setFormData({ name: "", email: "", phone: "" });
-            setConfirmed(false);
+            setFormData({ name: "", email: "", phone: "", role: "" });
+            setStep("form");
+            setShowModal(false);
             fetchInfluencerData();
         } catch (err) {
             alert("❌ Error: " + err.message);
@@ -63,136 +64,164 @@ const InfluencerOnboardingPage = () => {
             <div className="flex-1 lg:ml-64">
                 <div className="p-2 sm:p-4 lg:p-8">
                     <div className="mt-20 lg:mt-0">
-                        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
+                        <div className="max-w-7xl mx-auto space-y-6">
 
-                            {/* Header */}
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-8 hover:shadow-md transition-all">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                    <div className="p-3 bg-blue-50 rounded-full self-start sm:self-center">
-                                        <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                d="M12 11c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm0 0c0 2.21 1.79 4 4 4s4-1.79 4-4-1.79-4-4-4-4 1.79-4 4zm-4 4c-2.21 0-4 1.79-4 4v1h16v-1c0-2.21-1.79-4-4-4H8z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-800">
-                                            Influencer Onboarding
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            {/* Influencer Stats Card - Full Width */}
-                            <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-6 flex justify-between items-center hover:shadow-md transition-transform hover:scale-105">
+                            {/* Stats Card */}
+                            <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-6 flex items-center hover:shadow-md transition-transform hover:scale-105">
                                 <div>
                                     <p className="text-indigo-700 text-sm font-medium">Total Influencers</p>
                                     <h3 className="text-2xl font-bold text-gray-800">{totalInfluencers}</h3>
                                 </div>
-                                <div className="p-2 rounded-full bg-indigo-100">
-                                    <svg className="w-5 h-5 text-indigo-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <path d="M17 20h5v-2a3 3 0 00-3-3h-2M9 20H4v-2a3 3 0 013-3h2m3-4a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8 4 4 0 000 8z" />
-                                    </svg>
-                                </div>
+                            </div>
+
+                            {/* Table Header with Button */}
+                            <div className="flex justify-between items-center my-4">
+                                <h2 className="text-xl font-bold">Influencers</h2>
+                                <button
+                                    onClick={() => setShowModal(true)}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                                >
+                                    + Add Influencer
+                                </button>
                             </div>
 
 
+                            {/* Table Section Full Width */}
+                            <div className="w-full bg-white rounded-xl shadow border p-6">
 
-                            {/* Main Section */}
-                            <div className="flex flex-col lg:flex-row gap-6">
-
-                                {/* Form Section */}
-                                <div className="w-full lg:w-1/2 bg-white rounded-xl shadow border p-6 space-y-4">
-                                    {!confirmed ? (
-                                        <>
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                placeholder="Name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg"
-                                            />
-                                            <input
-                                                type="email"
-                                                name="email"
-                                                placeholder="Email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg"
-                                            />
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                placeholder="Phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                className="w-full px-4 py-2 border rounded-lg"
-                                            />
-                                            <button
-                                                onClick={handleConfirm}
-                                                className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"
-                                            >
-                                                Confirm Details
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div ref={confirmRef} className="space-y-2 text-gray-800">
-                                                <p><strong>Name:</strong> {formData.name}</p>
-                                                <p><strong>Email:</strong> {formData.email}</p>
-                                                <p><strong>Phone:</strong> {formData.phone}</p>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={handleSubmit}
-                                                    disabled={loading}
-                                                    className={`bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                                                >
-                                                    {loading ? "Submitting..." : "Submit & Send Mail"}
-                                                </button>
-                                                <button
-                                                    onClick={() => setConfirmed(false)}
-                                                    className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
-                                                >
-                                                    Edit
-                                                </button>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Influencer Table Section */}
-                                <div className="w-full lg:w-1/2 bg-white rounded-xl shadow border p-6">
-                                    <h2 className="text-lg font-semibold mb-4 text-gray-800">All Influencers</h2>
-                                    {influencers.length > 0 ? (
-                                        <div className="max-h-56 overflow-y-auto">
-                                            <table className="w-full text-left border-collapse">
-                                                <thead>
-                                                    <tr className="bg-gray-100 sticky top-0">
-                                                        <th className="p-2 border-b text-sm text-gray-600">Name</th>
-                                                        <th className="p-2 border-b text-sm text-gray-600">Email</th>
-                                                        <th className="p-2 border-b text-sm text-gray-600">Phone</th>
+                                {influencers.length > 0 ? (
+                                    <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="bg-gray-100 sticky top-0">
+                                                    <th className="p-2 border-b text-sm text-gray-600">Name</th>
+                                                    <th className="p-2 border-b text-sm text-gray-600">Email</th>
+                                                    <th className="p-2 border-b text-sm text-gray-600">Phone</th>
+                                                    <th className="p-2 border-b text-sm text-gray-600">Role</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {influencers.map((inf) => (
+                                                    <tr key={inf.influencer_id} className="hover:bg-gray-50">
+                                                        <td className="p-2 border-b text-gray-800">{inf.name}</td>
+                                                        <td className="p-2 border-b text-gray-800">{inf.email}</td>
+                                                        <td className="p-2 border-b text-gray-800">{inf.phone}</td>
+                                                        <td className="p-2 border-b text-gray-800">{inf.role}</td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {influencers.map((inf) => (
-                                                        <tr key={inf.influencer_id} className="hover:bg-gray-50">
-                                                            <td className="p-2 border-b text-gray-800">{inf.name}</td>
-                                                            <td className="p-2 border-b text-gray-800">{inf.email}</td>
-                                                            <td className="p-2 border-b text-gray-800">{inf.phone}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    ) : (
-                                        <p className="text-gray-500">No influencer data yet.</p>
-                                    )}
-                                </div>
-
-
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500">No influencer data yet.</p>
+                                )}
                             </div>
+
+
+                            {/* Modal */}
+                            {showModal && (
+                                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 space-y-4 relative">
+                                        <button
+                                            onClick={() => { setShowModal(false); setStep("form"); }}
+                                            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                                        >
+                                            ✕
+                                        </button>
+
+                                        {step === "form" && (
+                                            <>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Add Influencer</h3>
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    placeholder="Name"
+                                                    value={formData.name}
+                                                    onChange={handleChange}
+                                                    className="w-full px-4 py-2 border rounded-lg mb-3"
+                                                />
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    placeholder="Email"
+                                                    value={formData.email}
+                                                    onChange={handleChange}
+                                                    className="w-full px-4 py-2 border rounded-lg mb-3"
+                                                />
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    placeholder="Phone"
+                                                    value={formData.phone}
+                                                    onChange={handleChange}
+                                                    className="w-full px-4 py-2 border rounded-lg mb-3"
+                                                />
+
+                                                <div className="flex flex-col space-y-2 mb-3">
+                                                    <label className="font-medium">Select Role *</label>
+                                                    <div className="flex gap-6">
+                                                        <label className="flex items-center gap-2">
+                                                            <input
+                                                                type="radio"
+                                                                name="role"
+                                                                value="Moms"
+                                                                checked={formData.role === "Moms"}
+                                                                onChange={handleChange}
+                                                            />
+                                                            Moms
+                                                        </label>
+                                                        <label className="flex items-center gap-2">
+                                                            <input
+                                                                type="radio"
+                                                                name="role"
+                                                                value="Ambassador"
+                                                                checked={formData.role === "Ambassador"}
+                                                                onChange={handleChange}
+                                                            />
+                                                            Ambassador
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <button
+                                                    onClick={handleConfirm}
+                                                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"
+                                                >
+                                                    Confirm Details
+                                                </button>
+                                            </>
+                                        )}
+
+                                        {step === "confirm" && (
+                                            <>
+                                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Details</h3>
+                                                <div className="space-y-2 text-gray-800 mb-4">
+                                                    <p><strong>Name:</strong> {formData.name}</p>
+                                                    <p><strong>Email:</strong> {formData.email}</p>
+                                                    <p><strong>Phone:</strong> {formData.phone}</p>
+                                                    <p><strong>Role:</strong> {formData.role}</p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={handleSubmit}
+                                                        disabled={loading}
+                                                        className={`flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                    >
+                                                        {loading ? "Submitting..." : "Submit & Send Mail"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setStep("form")}
+                                                        className="flex-1 bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
