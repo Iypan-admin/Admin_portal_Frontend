@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { getInfluencerCount, getAllInfluencers, submitInfluencer } from "../services/Api";
 
+
 const InfluencerOnboardingPage = () => {
     const [totalInfluencers, setTotalInfluencers] = useState(0);
     const [influencers, setInfluencers] = useState([]);
-    const [filteredInfluencers, setFilteredInfluencers] = useState([]);
     const [loading, setLoading] = useState(false);
-
-    // Search state
-    const [searchQuery, setSearchQuery] = useState("");
 
     // Modal states
     const [showModal, setShowModal] = useState(false);
@@ -20,19 +17,13 @@ const InfluencerOnboardingPage = () => {
         fetchInfluencerData();
     }, []);
 
-    useEffect(() => {
-        handleSearch(searchQuery);
-    }, [searchQuery, influencers]);
-
     const fetchInfluencerData = async () => {
         try {
             const countRes = await getInfluencerCount();
             setTotalInfluencers(countRes?.count || 0);
 
             const allRes = await getAllInfluencers();
-            const list = Array.isArray(allRes) ? allRes : [];
-            setInfluencers(list);
-            setFilteredInfluencers(list);
+            setInfluencers(Array.isArray(allRes) ? allRes : []);
         } catch (err) {
             console.error("Error fetching data:", err);
         }
@@ -67,24 +58,6 @@ const InfluencerOnboardingPage = () => {
         }
     };
 
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        if (!query.trim()) {
-            setFilteredInfluencers(influencers);
-            return;
-        }
-
-        const lower = query.toLowerCase();
-        const filtered = influencers.filter(
-            (inf) =>
-                inf.name?.toLowerCase().includes(lower) ||
-                inf.email?.toLowerCase().includes(lower) ||
-                inf.phone?.toLowerCase().includes(lower) ||
-                inf.role?.toLowerCase().includes(lower)
-        );
-        setFilteredInfluencers(filtered);
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col lg:flex-row">
             <Navbar />
@@ -101,29 +74,22 @@ const InfluencerOnboardingPage = () => {
                                 </div>
                             </div>
 
-                            {/* Table Header with Button + Search */}
-                            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 my-4">
+                            {/* Table Header with Button */}
+                            <div className="flex justify-between items-center my-4">
                                 <h2 className="text-xl font-bold">Influencers</h2>
-                                <div className="flex gap-3 w-full sm:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search..."
-                                        value={searchQuery}
-                                        onChange={(e) => handleSearch(e.target.value)}
-                                        className="w-full sm:w-64 px-4 py-2 border rounded-lg"
-                                    />
-                                    <button
-                                        onClick={() => setShowModal(true)}
-                                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                                    >
-                                        + Add Influencer
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={() => setShowModal(true)}
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                                >
+                                    + Add Influencer
+                                </button>
                             </div>
 
-                            {/* Table Section */}
+
+                            {/* Table Section Full Width */}
                             <div className="w-full bg-white rounded-xl shadow border p-6">
-                                {filteredInfluencers.length > 0 ? (
+
+                                {influencers.length > 0 ? (
                                     <div className="overflow-y-auto" style={{ maxHeight: "300px" }}>
                                         <table className="w-full text-left border-collapse">
                                             <thead>
@@ -135,7 +101,7 @@ const InfluencerOnboardingPage = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {filteredInfluencers.map((inf) => (
+                                                {influencers.map((inf) => (
                                                     <tr key={inf.influencer_id} className="hover:bg-gray-50">
                                                         <td className="p-2 border-b text-gray-800">{inf.name}</td>
                                                         <td className="p-2 border-b text-gray-800">{inf.email}</td>
@@ -147,9 +113,10 @@ const InfluencerOnboardingPage = () => {
                                         </table>
                                     </div>
                                 ) : (
-                                    <p className="text-gray-500">No influencer data found.</p>
+                                    <p className="text-gray-500">No influencer data yet.</p>
                                 )}
                             </div>
+
 
                             {/* Modal */}
                             {showModal && (
