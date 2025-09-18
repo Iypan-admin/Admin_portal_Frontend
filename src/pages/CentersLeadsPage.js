@@ -7,13 +7,14 @@ const CentersLeadsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         phone: "",
-        source: "Website",
+        source: "",
         remark: "",
-        course: "French",
+        course: "",
     });
 
     const token = localStorage.getItem("token");
@@ -25,7 +26,7 @@ const CentersLeadsPage = () => {
             day: "numeric",
         });
 
-    // ✅ Wrap fetchLeadsHandler with useCallback
+    // ✅ Fetch leads
     const fetchLeadsHandler = useCallback(async () => {
         try {
             setLoading(true);
@@ -46,10 +47,14 @@ const CentersLeadsPage = () => {
         fetchLeadsHandler();
     }, [fetchLeadsHandler, token]);
 
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (!formData.course || !formData.source) {
+                alert("Please select both language and lead source.");
+                return;
+            }
+
             await createLead(formData, token);
             await fetchLeadsHandler();
             alert("Lead created successfully!");
@@ -58,9 +63,9 @@ const CentersLeadsPage = () => {
                 name: "",
                 email: "",
                 phone: "",
-                source: "Website",
+                source: "",
                 remark: "",
-                course: "French",
+                course: "",
             });
         } catch (err) {
             console.error(err);
@@ -114,7 +119,6 @@ const CentersLeadsPage = () => {
                         </div>
                     ) : (
                         <div className="bg-white shadow-md rounded-lg overflow-hidden w-full">
-                            {/* Horizontal Scroll Wrapper */}
                             <div className="overflow-x-auto rounded-md border border-gray-200 w-full">
                                 <table className="w-full min-w-[800px] table-auto text-sm">
                                     <thead className="bg-gray-50 sticky top-0 z-10">
@@ -132,13 +136,19 @@ const CentersLeadsPage = () => {
                                     <tbody>
                                         {leads.length === 0 ? (
                                             <tr>
-                                                <td colSpan={8} className="text-center py-6 text-gray-500">
+                                                <td
+                                                    colSpan={8}
+                                                    className="text-center py-6 text-gray-500"
+                                                >
                                                     No leads found
                                                 </td>
                                             </tr>
                                         ) : (
                                             leads.map((lead) => (
-                                                <tr key={lead.lead_id} className="hover:bg-gray-50">
+                                                <tr
+                                                    key={lead.lead_id}
+                                                    className="hover:bg-gray-50"
+                                                >
                                                     <td className="px-4 py-3">{lead.name}</td>
                                                     <td className="px-4 py-3">{lead.email}</td>
                                                     <td className="px-4 py-3">{lead.phone}</td>
@@ -146,14 +156,21 @@ const CentersLeadsPage = () => {
                                                     <td className="px-4 py-3">{lead.source}</td>
                                                     <td className="px-4 py-3">{lead.remark || "-"}</td>
                                                     <td className="px-4 py-3">
-                                                        {lead.created_at ? formatDate(lead.created_at) : "-"}
+                                                        {lead.created_at
+                                                            ? formatDate(lead.created_at)
+                                                            : "-"}
                                                     </td>
                                                     <td className="px-4 py-3 flex flex-col sm:flex-row gap-2 items-start">
                                                         <select
                                                             value={lead.status}
-                                                            onChange={(e) => handleStatusChange(lead.lead_id, e.target.value)}
+                                                            onChange={(e) =>
+                                                                handleStatusChange(
+                                                                    lead.lead_id,
+                                                                    e.target.value
+                                                                )
+                                                            }
                                                             className={`px-2 py-1 rounded text-xs font-semibold w-full
-              ${lead.status === "enrolled"
+                                ${lead.status === "enrolled"
                                                                     ? "bg-green-100 text-green-700"
                                                                     : lead.status === "lost_lead"
                                                                         ? "bg-red-100 text-red-700"
@@ -167,22 +184,31 @@ const CentersLeadsPage = () => {
                                                                 }`}
                                                         >
                                                             <option value="data_entry">Data Entry</option>
-                                                            <option value="not_connected_1">Not Connected 1</option>
-                                                            <option value="not_connected_2">Not Connected 2</option>
-                                                            <option value="not_connected_3">Not Connected 3</option>
+                                                            <option value="not_connected_1">
+                                                                Not Connected 1
+                                                            </option>
+                                                            <option value="not_connected_2">
+                                                                Not Connected 2
+                                                            </option>
+                                                            <option value="not_connected_3">
+                                                                Not Connected 3
+                                                            </option>
                                                             <option value="interested">Interested</option>
-                                                            <option value="need_follow">Need Follow-up</option>
-                                                            <option value="demo_schedule">Demo Schedule</option>
+                                                            <option value="need_follow">
+                                                                Need Follow-up
+                                                            </option>
+                                                            <option value="demo_schedule">
+                                                                Demo Schedule
+                                                            </option>
                                                             <option value="junk_lead">Junk Lead</option>
                                                             <option value="lost_lead">Lost Lead</option>
                                                             <option value="enrolled">Enrolled</option>
                                                             <option value="closed_lead">Closed Lead</option>
                                                         </select>
 
-                                                        {/* ✅ Show extra button only if status is closed_lead */}
                                                         {lead.status === "closed_lead" && (
                                                             <button
-                                                                onClick={() => window.open("https://studentportal.iypan.com/register", "_blank")}
+                                                                onClick={() => setShowRegisterModal(true)}
                                                                 className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 mt-1 sm:mt-0"
                                                             >
                                                                 Convert to Student
@@ -200,11 +226,39 @@ const CentersLeadsPage = () => {
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* ✅ Student Register Modal */}
+            {showRegisterModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+                    <div className="bg-white rounded-lg w-full max-w-4xl h-[90vh] shadow-lg flex flex-col">
+                        <div className="flex justify-between items-center px-4 py-2 border-b">
+                            <h2 className="text-lg font-semibold text-gray-800">
+                                Student Registration
+                            </h2>
+                            <button
+                                onClick={() => setShowRegisterModal(false)}
+                                className="text-gray-500 hover:text-gray-700"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <div className="flex-1">
+                            <iframe
+                                src="https://studentportal.iypan.com/register"
+                                title="Student Register"
+                                className="w-full h-full rounded-b-lg"
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ Add Lead Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50 px-4">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                        <h2 className="text-xl font-semibold mb-6 text-center">Add New Lead</h2>
+                        <h2 className="text-xl font-semibold mb-6 text-center">
+                            Add New Lead
+                        </h2>
                         <form onSubmit={handleFormSubmit} className="space-y-4">
                             <input
                                 type="text"
@@ -212,7 +266,9 @@ const CentersLeadsPage = () => {
                                 placeholder="Name"
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, name: e.target.value })
+                                }
                             />
                             <input
                                 type="email"
@@ -220,7 +276,9 @@ const CentersLeadsPage = () => {
                                 placeholder="Email"
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, email: e.target.value })
+                                }
                             />
                             <input
                                 type="text"
@@ -228,29 +286,43 @@ const CentersLeadsPage = () => {
                                 placeholder="Phone"
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.phone}
-                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, phone: e.target.value })
+                                }
                             />
 
+                            {/* ✅ Language dropdown with "Choose your language" */}
                             <select
+                                required
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.course}
-                                onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, course: e.target.value })
+                                }
                             >
+                                <option value="">Choose your language</option>
                                 <option value="French">French</option>
                                 <option value="German">German</option>
                                 <option value="Japanese">Japanese</option>
                             </select>
 
+                            {/* ✅ Lead Source dropdown with "Choose lead source" */}
                             <select
+                                required
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.source}
-                                onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, source: e.target.value })
+                                }
                             >
+                                <option value="">Choose lead source</option>
                                 <option value="Facebook">Facebook</option>
                                 <option value="Website">Website</option>
                                 <option value="Google">Google</option>
                                 <option value="Justdial">Justdial</option>
-                                <option value="Associate Reference">Associate Reference</option>
+                                <option value="Associate Reference">
+                                    Associate Reference
+                                </option>
                                 <option value="Student Reference">Student Reference</option>
                                 <option value="Walk-in">Walk-in</option>
                                 <option value="ISML Leads">ISML Leads</option>
@@ -261,14 +333,23 @@ const CentersLeadsPage = () => {
                                 placeholder="Remarks"
                                 className="w-full border px-3 py-2 rounded"
                                 value={formData.remark}
-                                onChange={(e) => setFormData({ ...formData, remark: e.target.value })}
+                                onChange={(e) =>
+                                    setFormData({ ...formData, remark: e.target.value })
+                                }
                             />
 
                             <div className="flex flex-col sm:flex-row justify-end gap-3">
-                                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="px-4 py-2 bg-gray-200 rounded"
+                                >
                                     Cancel
                                 </button>
-                                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded"
+                                >
                                     Submit
                                 </button>
                             </div>
