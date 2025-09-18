@@ -1386,6 +1386,8 @@ export const getBatches = async (token) => {
 
         const data = await response.json();
 
+        console.log("Batches fetched from API:", data);
+
         if (!response.ok) {
             throw new Error(data.error || 'Failed to fetch batches');
         }
@@ -2165,3 +2167,71 @@ export const getRecentPendingCards = async () => {
         throw error;
     }
 };
+const getAuthHeaders = (token) => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+});
+
+// ✅ Get all leads (logged-in user's leads)
+export const getAllLeads = async (token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/leads`, {
+            method: "GET",
+            headers: getAuthHeaders(token),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to fetch leads");
+        }
+
+        // backend returns: { success: true, leads: [...] }
+        return result.leads || [];
+    } catch (error) {
+        throw new Error(error.message || "Something went wrong while fetching leads");
+    }
+};
+
+// ✅ Create new lead
+export const createLead = async (leadData, token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/leads`, {
+            method: "POST",
+            headers: getAuthHeaders(token),
+            body: JSON.stringify(leadData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to create lead");
+        }
+
+        return result.lead; // backend: { success, lead }
+    } catch (error) {
+        throw new Error(error.message || "Something went wrong while creating lead");
+    }
+};
+
+// ✅ Update lead status
+export const updateLeadStatus = async (id, status, token) => {
+    try {
+        const response = await fetch(`${LIST_API_URL}/leads/${id}/status`, {
+            method: "PATCH", // 🔹 use PATCH instead of PUT
+            headers: getAuthHeaders(token),
+            body: JSON.stringify({ status }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update lead status");
+        }
+
+        return result.lead; // backend: { success, lead }
+    } catch (error) {
+        throw new Error(error.message || "Something went wrong while updating lead status");
+    }
+};
+

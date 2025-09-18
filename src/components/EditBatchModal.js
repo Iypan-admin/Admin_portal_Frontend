@@ -3,13 +3,13 @@ import { getAllCenters, getAllTeachers, getAllCourses } from '../services/Api';
 
 const EditBatchModal = ({ batch, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
-    batch_name: batch.batch_name || '',
-    duration: batch.duration || 6,
-    center: batch.center || '',
-    teacher: batch.teacher_id || '', // Make sure this matches the teacher_id from the API
-    course_id: batch.course_id || '',
-    time_from: batch.time_from || '',
-    time_to: batch.time_to || ''
+    batch_name: '',
+    duration: 6,
+    center: '',
+    teacher: '',
+    course_id: '',
+    time_from: '',
+    time_to: ''
   });
 
   const [centers, setCenters] = useState([]);
@@ -22,30 +22,47 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
   });
   const [error, setError] = useState(null);
 
+  // 🔥 Pre-fill formData when batch + lists are available
+  useEffect(() => {
+    if (batch && centers.length && teachers.length && courses.length) {
+      // match by name → get ID
+      const selectedCenter = centers.find(c => c.center_name === batch.center_name);
+      const selectedTeacher = teachers.find(t => t.teacher_name === batch.teacher_name);
+      const selectedCourse = courses.find(cr => cr.course_name === batch.course_name);
+
+      setFormData({
+        batch_name: batch.batch_name || '',
+        duration: batch.duration || 6,
+        center: selectedCenter ? String(selectedCenter.center_id) : '',
+        teacher: selectedTeacher ? String(selectedTeacher.teacher_id) : '',
+        course_id: selectedCourse ? String(selectedCourse.id) : '',
+        time_from: batch.time_from ? batch.time_from.slice(0, 5) : '', // "20:00:00" → "20:00"
+        time_to: batch.time_to ? batch.time_to.slice(0, 5) : ''
+      });
+    }
+  }, [batch, centers, teachers, courses]);
+
+  // Fetch dropdown data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch centers
         const centersResponse = await getAllCenters();
         if (centersResponse.success && Array.isArray(centersResponse.data)) {
           setCenters(centersResponse.data);
         }
         setLoading(prev => ({ ...prev, centers: false }));
 
-        // Fetch teachers
         const teachersResponse = await getAllTeachers();
         if (teachersResponse.success && Array.isArray(teachersResponse.data)) {
           setTeachers(teachersResponse.data);
         }
         setLoading(prev => ({ ...prev, teachers: false }));
 
-        // Fetch courses
         const coursesResponse = await getAllCourses();
         if (coursesResponse.success && Array.isArray(coursesResponse.data)) {
           setCourses(coursesResponse.data);
         }
         setLoading(prev => ({ ...prev, courses: false }));
-
       } catch (error) {
         console.error('Error fetching data:', error);
         setError('Failed to load required data');
@@ -61,9 +78,9 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
       const updatedData = {
         batch_name: formData.batch_name,
         duration: parseInt(formData.duration),
-        center: formData.center,
-        teacher: formData.teacher,
-        course_id: formData.course_id,
+        center: parseInt(formData.center),
+        teacher: parseInt(formData.teacher),
+        course_id: parseInt(formData.course_id),
         time_from: formData.time_from,
         time_to: formData.time_to
       };
@@ -123,7 +140,7 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
                 type="number"
                 className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                 value={formData.duration}
-                onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                 min="1"
                 max="24"
                 required
@@ -140,7 +157,7 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
               >
                 <option value="">Select Center</option>
                 {centers.map((center) => (
-                  <option key={center.center_id} value={center.center_id}>
+                  <option key={center.center_id} value={String(center.center_id)}>
                     {center.center_name}
                   </option>
                 ))}
@@ -157,7 +174,7 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
               >
                 <option value="">Select Teacher</option>
                 {teachers.map((teacher) => (
-                  <option key={teacher.teacher_id} value={teacher.teacher_id}>
+                  <option key={teacher.teacher_id} value={String(teacher.teacher_id)}>
                     {teacher.teacher_name}
                   </option>
                 ))}
@@ -174,12 +191,13 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
               >
                 <option value="">Select Course</option>
                 {courses.map((course) => (
-                  <option key={course.id} value={course.id}>
+                  <option key={course.id} value={String(course.id)}>
                     {course.course_name}
                   </option>
                 ))}
               </select>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Start Time</label>
               <input
@@ -201,7 +219,6 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
                 required
               />
             </div>
-
           </div>
 
           <div className="flex justify-end gap-3 mt-6">

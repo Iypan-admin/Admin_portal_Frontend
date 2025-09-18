@@ -16,8 +16,6 @@ const ManageBatchesPage = () => {
     batch.center_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-
   const fetchBatches = async () => {
     try {
       setLoading(true);
@@ -27,7 +25,6 @@ const ManageBatchesPage = () => {
       const response = await getBatches(token);
       console.log("Batches response:", response); // Debug log
 
-      // Check if response has the expected structure with success and data properties
       if (response?.success && Array.isArray(response.data)) {
         setBatches(response.data);
       } else {
@@ -56,10 +53,7 @@ const ManageBatchesPage = () => {
       const response = await updateBatch(token, batchId, updateData);
 
       if (response && response.success) {
-        // Show success message
         alert("Batch updated successfully!");
-
-        // Refresh the batches list
         await fetchBatches();
         setEditingBatch(null);
       } else {
@@ -75,33 +69,17 @@ const ManageBatchesPage = () => {
   const handleDeleteBatch = async (batchId) => {
     if (window.confirm("Are you sure you want to delete this batch?")) {
       try {
-        setError(null); // Clear any existing errors
+        setError(null);
         const token = localStorage.getItem("token");
 
-        console.log("Attempting to delete batch:", batchId); // Debug log
-        console.log("Using token:", token); // Debug log
-
         const response = await deleteBatch(token, batchId);
-        console.log("Delete response:", response); // Debug log
+        console.log("Delete response:", response);
 
-        // Show success message
         alert("Batch deleted successfully!");
-
-        // Refresh the batches list after successful deletion
         await fetchBatches();
       } catch (error) {
-        console.error("Delete batch error details:", {
-          message: error.message,
-          stack: error.stack,
-          batchId: batchId,
-        });
-
-        // Set a more descriptive error message
-        setError(
-          `Failed to delete batch: ${error.message || "Unknown error occurred"}`
-        );
-
-        // Show error alert to user
+        console.error("Delete batch error details:", error);
+        setError(`Failed to delete batch: ${error.message || "Unknown error occurred"}`);
         alert("Failed to delete batch. Please try again.");
       }
     }
@@ -112,7 +90,7 @@ const ManageBatchesPage = () => {
       setError(null);
       const token = localStorage.getItem("token");
       await createBatch(token, batchData);
-      await fetchBatches(); // Refresh the list
+      await fetchBatches();
       setShowCreateModal(false);
       alert("Batch created successfully!");
     } catch (error) {
@@ -133,9 +111,9 @@ const ManageBatchesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100 flex overflow-hidden">
       <Navbar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1 lg:ml-64 overflow-hidden">
         <div className="p-4 lg:p-8">
           <div className="mt-16 lg:mt-0">
             <div className="max-w-7xl mx-auto">
@@ -171,6 +149,7 @@ const ManageBatchesPage = () => {
                   {error}
                 </div>
               )}
+
               {/* Search Center Name */}
               <div className="mb-4 w-full sm:w-1/2">
                 <input
@@ -182,85 +161,82 @@ const ManageBatchesPage = () => {
                 />
               </div>
 
-
-
               {/* Table Container */}
-              <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="overflow-x-auto max-h-[calc(100vh-250px)] overflow-y-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
+              <div className="bg-white rounded-lg shadow-md">
+                <div className="overflow-x-auto w-full">
+                  <table className="min-w-[1000px] divide-y divide-gray-200">
                     <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Batch Name
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Type
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Duration
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Center
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Teacher
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Course
                         </th>
-                        <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Students
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredBatches.map((batch) => (
-
                         <tr key={batch.batch_id} className="hover:bg-gray-50">
-                          <td
-                            className="px-4 sm:px-6 py-4 text-sm font-medium text-gray-900 max-w-[160px] truncate"
-                            title={batch.batch_name}
-                          >
+                          <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-normal break-words">
                             {batch.batch_name}
                           </td>
-
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                          <td className="px-4 py-4 text-sm text-gray-500">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-blue-100 text-blue-800"
                                 }`}
                             >
                               {batch.course_type}
                             </span>
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                          <td className="px-4 py-4 text-sm text-gray-500">
                             {batch.duration} months
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                          <td className="px-4 py-4 text-sm text-gray-500">
                             {batch.center_name}
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                          <td className="px-4 py-4 text-sm text-gray-500">
                             {batch.teacher_name}
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                          <td className="px-4 py-4 text-sm text-gray-500">
                             {batch.course_name}
                           </td>
-                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div className="flex gap-2">
-                              <button
-                                className="text-blue-600 hover:text-blue-900"
-                                onClick={() => setEditingBatch(batch)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="text-red-600 hover:text-red-900"
-                                onClick={() => handleDeleteBatch(batch.batch_id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
+                          <td className="px-4 py-4 text-sm text-gray-500">
+                            {batch.student_count ?? 0}
+                          </td>
+                          <td className="px-4 py-4 text-sm font-medium flex gap-2">
+                            <button
+                              className="text-blue-600 hover:text-blue-900"
+                              onClick={() => setEditingBatch(batch)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="text-red-600 hover:text-red-900"
+                              onClick={() => handleDeleteBatch(batch.batch_id)}
+                            >
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))}

@@ -33,7 +33,7 @@ import ApprovedGiveawayCardPage from './pages/ApprovedGiveawayPage';
 import ViewCenterEliteCard from "./pages/ViewCenterEliteCard";
 import InfluencerOnboardingPage from "./pages/InfluencerOnboardingPage";
 import EliteCardPaymentsPage from "./pages/EliteCardPaymentsPage";
-
+import CentersLeadsPage from "./pages/CentersLeadsPage";
 
 
 
@@ -345,6 +345,14 @@ function App() {
               element={
                 <ProtectedRoute allowedRole="center">
                   <ViewCenterEliteCard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/center/leads"
+              element={
+                <ProtectedRoute allowedRole="center">
+                  <CentersLeadsPage />
                 </ProtectedRoute>
               }
             />

@@ -53,9 +53,30 @@ const ActivateCardPage = () => {
     const handleCSVUpload = async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
         try {
             const res = await uploadGiveawayCSV(file);
-            if (res?.status === "ok") {
+
+            if (res?.status === "duplicate_found") {
+                // duplicate mail found
+                const proceed = window.confirm(
+                    `⚠️ ${res.duplicates.length} duplicate(s) found:\n${res.duplicates.join(
+                        ", "
+                    )}\n\nDo you want to skip duplicates and insert remaining?`
+                );
+                if (proceed) {
+                    // call backend again with skip flag
+                    const res2 = await uploadGiveawayCSV(file, true); // true = skipDuplicates
+                    if (res2?.status === "ok") {
+                        alert(`✅ ${res2.inserted} rows uploaded successfully (duplicates skipped)!`);
+                        fetchData();
+                    } else {
+                        alert("❌ Failed to insert remaining data.");
+                    }
+                } else {
+                    alert("❌ Upload cancelled due to duplicates.");
+                }
+            } else if (res?.status === "ok") {
                 setUploadMessage(`✅ ${res.inserted} rows uploaded successfully!`);
                 fetchData();
             } else {
@@ -66,6 +87,7 @@ const ActivateCardPage = () => {
             setUploadMessage("❌ Upload failed. Try again.");
         }
     };
+
 
     // ✅ Status Colors
     const getStatusClass = (status) => {
@@ -99,6 +121,11 @@ const ActivateCardPage = () => {
             };
 
             const res = await addGiveawayManual(newEntry);
+
+            if (res?.status === "duplicate_found") {
+                alert(`⚠️ Duplicate entry found for email: ${formData.email}`);
+                return;
+            }
 
             if (res && !res.error) {
                 alert(res.message || "✅ Giveaway entry added successfully!");
@@ -190,7 +217,7 @@ const ActivateCardPage = () => {
 
                 {/* Table */}
                 <div className="overflow-x-auto bg-white border rounded-lg shadow-sm">
-                    <div className="max-h-[420px] overflow-y-auto">
+                    <div className="max-h-[336px] overflow-y-auto">
                         <table className="min-w-full text-xs sm:text-sm">
                             <thead className="bg-gray-100 sticky top-0 z-10">
                                 <tr>
@@ -216,7 +243,7 @@ const ActivateCardPage = () => {
                                                 item.name?.toLowerCase().includes(searchQuery.toLowerCase())
                                         )
                                         .map((item, index) => (
-                                            <tr key={index}>
+                                            <tr key={index} className="h-12">
                                                 <td className="px-3 py-2">{item.referenceId}</td>
                                                 <td className="px-3 py-2">{item.name}</td>
                                                 <td className="px-3 py-2 hidden sm:table-cell">{item.cardName}</td>
@@ -236,10 +263,7 @@ const ActivateCardPage = () => {
                                         ))
                                 ) : (
                                     <tr>
-                                        <td
-                                            colSpan={7}
-                                            className="text-center py-4 text-sm text-gray-500"
-                                        >
+                                        <td colSpan={7} className="text-center py-4 text-sm text-gray-500">
                                             No data. Upload CSV.
                                         </td>
                                     </tr>

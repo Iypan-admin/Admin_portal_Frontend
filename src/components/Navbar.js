@@ -323,6 +323,16 @@ const Navbar = ({ showCenterViewOptions, selectedCenter }) => {
             </svg>
           ),
         },
+        {
+          path: "/center/leads",
+          name: "Manage Leads",
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M16 12a4 4 0 01-8 0m8 0a4 4 0 00-8 0m8 0v1a6 6 0 01-12 0v-1m12 0V9a6 6 0 00-12 0v3" />
+            </svg>
+          ),
+        },
       ],
       state: [
         {

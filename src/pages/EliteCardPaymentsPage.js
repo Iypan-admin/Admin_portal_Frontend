@@ -11,7 +11,8 @@ const EliteCardPaymentsPage = () => {
     const [allCards, setAllCards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
-    const [expandedRowId, setExpandedRowId] = useState(null); // ✅ which row is expanded
+    const [expandedRowId, setExpandedRowId] = useState(null);
+    const [search, setSearch] = useState(""); // ✅ search state
 
     const loadAllCards = async () => {
         try {
@@ -64,6 +65,11 @@ const EliteCardPaymentsPage = () => {
         loadAllCards();
     }, []);
 
+    // ✅ Filtered cards based on search
+    const filteredCards = allCards.filter((card) =>
+        card.name_on_the_pass?.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col lg:flex-row">
             <Navbar />
@@ -73,9 +79,20 @@ const EliteCardPaymentsPage = () => {
                 </h2>
                 <p className="text-sm text-gray-600 mb-4">Manage and view all Elite card requests</p>
 
+                {/* ✅ Search Bar */}
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search by name..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full sm:w-1/3 px-3 py-2 border rounded shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                </div>
+
                 {loading ? (
                     <p className="text-gray-500">Loading...</p>
-                ) : allCards.length === 0 ? (
+                ) : filteredCards.length === 0 ? (
                     <p className="text-gray-500">No cards found.</p>
                 ) : (
                     <div className="overflow-x-auto border rounded-lg bg-white shadow-md">
@@ -94,7 +111,7 @@ const EliteCardPaymentsPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {allCards.map((card) => (
+                                    {filteredCards.map((card) => (
                                         <React.Fragment key={card.id}>
                                             <tr>
                                                 <td className="px-3 py-2">{card.name_on_the_pass}</td>

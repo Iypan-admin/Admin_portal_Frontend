@@ -185,7 +185,7 @@ const InfluencerOnboardingPage = () => {
 
                                                 <button
                                                     onClick={handleConfirm}
-                                                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"
+                                                    className="w-full bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg"
                                                 >
                                                     Confirm Details
                                                 </button>
