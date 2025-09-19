@@ -179,7 +179,7 @@ const ApproveStudentsPage = () => {
               ) : (
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
                   {/* Desktop / Tablet Table */}
-                  <div className="hidden md:block overflow-x-auto">
+                  <div className="hidden md:block overflow-x-auto overflow-y-auto max-h-[calc(100vh-200px)]">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { getBatches, createBatch, updateBatch, deleteBatch } from "../services/Api";
+import {
+  getBatches,
+  createBatch,
+  updateBatch,
+  deleteBatch,
+} from "../services/Api";
 import EditBatchModal from "../components/EditBatchModal";
 import CreateBatchModal from "../components/CreateBatchModal";
 
@@ -12,9 +17,26 @@ const ManageBatchesPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredBatches = batches.filter((batch) =>
-    batch.center_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBatches = batches
+    .filter((batch) => {
+      const query = searchTerm.toLowerCase();
+
+      return (
+        batch.batch_name?.toLowerCase().includes(query) ||
+        batch.course_type?.toLowerCase().includes(query) ||
+        String(batch.duration)?.toLowerCase().includes(query) ||
+        batch.center_name?.toLowerCase().includes(query) ||
+        batch.teacher_name?.toLowerCase().includes(query) ||
+        batch.course_name?.toLowerCase().includes(query) ||
+        String(batch.student_count ?? 0).toLowerCase().includes(query)
+      );
+    })
+    .sort((a, b) => {
+      const numA = parseInt(a.batch_name.replace(/\D/g, ""), 10);
+      const numB = parseInt(b.batch_name.replace(/\D/g, ""), 10);
+      return numB - numA; // highest batch number first
+    });
+
 
   const fetchBatches = async () => {
     try {
@@ -23,7 +45,7 @@ const ManageBatchesPage = () => {
       const token = localStorage.getItem("token");
 
       const response = await getBatches(token);
-      console.log("Batches response:", response); // Debug log
+      console.log("Batches response:", response);
 
       if (response?.success && Array.isArray(response.data)) {
         setBatches(response.data);
@@ -48,7 +70,7 @@ const ManageBatchesPage = () => {
       setError(null);
       const token = localStorage.getItem("token");
 
-      console.log("Updating batch:", { batchId, updateData }); // Debug log
+      console.log("Updating batch:", { batchId, updateData });
 
       const response = await updateBatch(token, batchId, updateData);
 
@@ -79,7 +101,9 @@ const ManageBatchesPage = () => {
         await fetchBatches();
       } catch (error) {
         console.error("Delete batch error details:", error);
-        setError(`Failed to delete batch: ${error.message || "Unknown error occurred"}`);
+        setError(
+          `Failed to delete batch: ${error.message || "Unknown error occurred"}`
+        );
         alert("Failed to delete batch. Please try again.");
       }
     }
@@ -154,7 +178,7 @@ const ManageBatchesPage = () => {
               <div className="mb-4 w-full sm:w-1/2">
                 <input
                   type="text"
-                  placeholder="Search by center name..."
+                  placeholder="Search bar ..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -202,8 +226,8 @@ const ManageBatchesPage = () => {
                           <td className="px-4 py-4 text-sm text-gray-500">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-blue-100 text-blue-800"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
                                 }`}
                             >
                               {batch.course_type}
