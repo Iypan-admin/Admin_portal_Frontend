@@ -77,13 +77,14 @@ const EditBatchModal = ({ batch, onClose, onUpdate }) => {
     try {
       const updatedData = {
         batch_name: formData.batch_name,
-        duration: parseInt(formData.duration),
-        center: parseInt(formData.center),
-        teacher: parseInt(formData.teacher),
-        course_id: parseInt(formData.course_id),
+        duration: parseInt(formData.duration), // keep numeric
+        center: formData.center,               // string or UUID
+        teacher: formData.teacher,             // string or UUID
+        course_id: formData.course_id,         // keep as string/UUID
         time_from: formData.time_from,
         time_to: formData.time_to
       };
+
 
       await onUpdate(batch.batch_id, updatedData);
       onClose();
