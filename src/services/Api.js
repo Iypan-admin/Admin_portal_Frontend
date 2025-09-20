@@ -1170,11 +1170,7 @@ export const assignFinancialPartner = async (assignmentData, token) => {
     }
 };
 
-// ----------------------
-// Financial Service Functions
-// ----------------------
-
-export const approvePayment = async (transaction_id) => {
+export const approvePayment = async (payment_id) => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(`${FINANCE_API_URL}/approve`, {
@@ -1183,7 +1179,7 @@ export const approvePayment = async (transaction_id) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ transaction_id }),
+            body: JSON.stringify({ payment_id }),
         });
 
         const data = await response.json();
@@ -1191,14 +1187,15 @@ export const approvePayment = async (transaction_id) => {
 
         return data;
     } catch (error) {
+        console.error("Failed to approve payment:", error);
         throw error;
     }
 };
 
-export const getAllTransactions = async () => {
+export const getAllPayments = async () => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${FINANCE_API_URL}/transactions`, {
+        const response = await fetch(`${FINANCE_API_URL}/payments`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -1208,24 +1205,25 @@ export const getAllTransactions = async () => {
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
-        console.log("Transactions response:", data); // Add logging
+
+        console.log("Payments response:", data); // Add logging
         return data;
     } catch (error) {
-        console.error("Failed to fetch transactions:", error); // Add error logging
+        console.error("Failed to fetch payments:", error); // Add error logging
         throw error;
     }
 };
 
-export const editTransactionDuration = async (transaction_id, new_duration) => {
+export const editPaymentDuration = async (payment_id, new_course_duration) => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${FINANCE_API_URL}/transaction/edit`, {
+        const response = await fetch(`${FINANCE_API_URL}/payment/edit`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ transaction_id, new_duration }),
+            body: JSON.stringify({ payment_id, new_course_duration }),
         });
 
         const data = await response.json();
@@ -1233,10 +1231,10 @@ export const editTransactionDuration = async (transaction_id, new_duration) => {
 
         return data;
     } catch (error) {
+        console.error("Failed to edit payment duration:", error);
         throw error;
     }
 };
-
 export const getPendingElitePayments = async () => {
     try {
         const res = await fetch(`${FINANCE_API_URL}/elite-payments/pending-approvals`);
