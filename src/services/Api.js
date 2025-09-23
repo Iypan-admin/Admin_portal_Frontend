@@ -561,9 +561,6 @@ export const getStudentByRegisterNumber = async (registerNumber) => {
 
     return data.name; // since your response is { name: "..." }
 };
-
-
-
 /**
  * Fetch all teachers
  */

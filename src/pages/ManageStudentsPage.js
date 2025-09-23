@@ -106,7 +106,6 @@ const ManageStudentsPage = () => {
                 </div>
               )}
 
-              {/* Table Layout (works for both mobile & desktop) */}
               <div className="bg-white rounded-lg shadow-md">
                 {/* Horizontal scroll for mobile */}
                 <div className="overflow-x-auto w-full">
@@ -119,6 +118,7 @@ const ManageStudentsPage = () => {
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batch Name</th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Center</th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
                           <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -128,28 +128,21 @@ const ManageStudentsPage = () => {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {filteredStudents.map((student) => (
                           <tr key={student.student_id} className="hover:bg-gray-50">
-                            <td className="px-3 py-4 text-sm font-medium text-gray-900">{student.registration_number}</td>
-                            <td className="px-3 py-4 text-sm text-gray-900">{student.name}</td>
-                            <td className="px-3 py-4 text-sm text-gray-500">{student.email}</td>
-                            <td className="px-3 py-4 text-sm text-gray-500">{formatPhone(student.phone)}</td>
-                            <td className="px-3 py-4 text-sm text-gray-500">{student.center_name}</td>
-                            <td className="px-3 py-4 text-sm text-gray-500">{formatDate(student.created_at)}</td>
-                            <td className="px-3 py-4 text-sm">
-                              <span
-                                className={`px-2 py-1 text-xs font-semibold rounded-full ${student.status
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
-                                  }`}
-                              >
+                            <td className="px-3 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{student.registration_number}</td>
+                            <td className="px-3 py-4 text-sm text-gray-900 whitespace-nowrap">{student.name}</td>
+                            <td className="px-3 py-4 text-sm text-gray-500 truncate max-w-[150px]">{student.email}</td>
+                            <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">{formatPhone(student.phone)}</td>
+                            <td className="px-3 py-4 text-sm text-gray-500 truncate max-w-[120px]">{student.batch_name}</td>
+                            <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">{student.center_name}</td>
+                            <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">{formatDate(student.created_at)}</td>
+                            <td className="px-3 py-4 text-sm whitespace-nowrap">
+                              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${student.status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                 {student.status ? "Active" : "Pending"}
                               </span>
                             </td>
-                            <td className="px-3 py-4 text-sm font-medium">
+                            <td className="px-3 py-4 text-sm font-medium whitespace-nowrap">
                               {!student.status && (
-                                <button
-                                  onClick={() => handleApprove(student.student_id)}
-                                  className="text-green-600 hover:text-green-900"
-                                >
+                                <button onClick={() => handleApprove(student.student_id)} className="text-green-600 hover:text-green-900">
                                   Approve
                                 </button>
                               )}
@@ -161,6 +154,7 @@ const ManageStudentsPage = () => {
                   </div>
                 </div>
               </div>
+
 
 
               {/* Empty State */}
