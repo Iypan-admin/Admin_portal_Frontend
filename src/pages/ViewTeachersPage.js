@@ -1,89 +1,85 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { getTeachersByCenter, getCenterByAdminId } from '../services/Api';
+import { getTeachersByCenter, getCenterById } from '../services/Api';
 
 function ViewTeachersPage() {
+  const { centerId } = useParams();
+  const location = useLocation();
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedCenter, setSelectedCenter] = useState(null);  // Add this state variable
+  const [selectedCenter, setSelectedCenter] = useState(null);
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
-  };
 
+  // Load center info for sidebar
+  useEffect(() => {
+    const loadCenter = async () => {
+      try {
+        if (location.state?.centerName) {
+          setSelectedCenter({ center_id: centerId, center_name: location.state.centerName });
+          return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Authentication token not found');
+
+        const centerResponse = await getCenterById(centerId, token);
+        if (!centerResponse || !centerResponse.success) {
+          throw new Error(centerResponse?.message || 'Failed to fetch center info');
+        }
+
+        const center = centerResponse.data;
+        setSelectedCenter({ center_id: center.center_id, center_name: center.center_name });
+      } catch (err) {
+        console.error('Failed to load center info:', err);
+        setSelectedCenter({ center_id: centerId, center_name: 'Unknown Center' });
+      }
+    };
+
+    if (centerId) loadCenter();
+  }, [centerId, location.state]);
+
+  // Fetch teachers
   useEffect(() => {
     const fetchTeachers = async () => {
+      if (!centerId) return;
+
       try {
         setLoading(true);
+        setError(null);
         const token = localStorage.getItem('token');
+        const response = await getTeachersByCenter(centerId, token);
 
-        if (!token) {
-          throw new Error('Authentication token not found');
+        if (!response || !response.success) {
+          throw new Error(response?.message || 'Failed to fetch teachers data');
         }
 
-        // First get the center ID for the logged-in center admin
-        const centerResponse = await getCenterByAdminId(token);
-        console.log('Center Response:', centerResponse); // Debug log
-
-        if (!centerResponse || !centerResponse.success) {
-          throw new Error(centerResponse?.message || 'Failed to get center information');
-        }
-
-        // Extract the first center from the array
-        const center = centerResponse.data?.[0];
-
-        if (!center || !center.center_id) {
-          throw new Error('No center found for this admin');
-        }
-
-        // Then fetch teachers for this center
-        const teachersResponse = await getTeachersByCenter(center.center_id, token);
-        console.log('Teachers Response:', teachersResponse); // Debug log
-        console.log("Teachers Data:", teachersResponse.data);
-
-        if (!teachersResponse || !teachersResponse.success) {
-          throw new Error(teachersResponse?.message || 'Failed to fetch teachers data');
-        }
-
-        if (!Array.isArray(teachersResponse.data)) {
-          throw new Error('Invalid teachers data format received');
-        }
-
-        setTeachers(teachersResponse.data);
-      } catch (error) {
-        console.error('Error details:', error); // More detailed error logging
-        setError(error.message || 'Failed to load teachers');
+        setTeachers(Array.isArray(response.data) ? response.data : []);
+      } catch (err) {
+        console.error('Error fetching teachers:', err);
+        setError(err.message || 'Failed to load teachers');
+        setTeachers([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTeachers();
-  }, []);
-
-  // Add this useEffect after your existing one
-  useEffect(() => {
-    // Load selected center from localStorage if available
-    const savedCenter = localStorage.getItem("selectedCenterView");
-    if (savedCenter) {
-      setSelectedCenter(JSON.parse(savedCenter));
-    }
-  }, []);
+  }, [centerId]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      <Navbar
-        showCenterViewOptions={!!selectedCenter}
-        selectedCenter={selectedCenter}
-      />
+      <Navbar showCenterViewOptions={!!selectedCenter} selectedCenter={selectedCenter} />
       <div className="flex-1 lg:ml-64">
-        <div className="p-2 sm:p-4 lg:p-8"> {/* Reduced padding on small screens */}
-          <div className="mt-16 lg:mt-0"> {/* Extra margin for mobile navbar */}
+        <div className="p-2 sm:p-4 lg:p-8">
+          <div className="mt-16 lg:mt-0">
             <div className="max-w-7xl mx-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Center Teachers</h1>
@@ -92,11 +88,7 @@ function ViewTeachersPage() {
                 </div>
               </div>
 
-              {error && (
-                <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">
-                  {error}
-                </div>
-              )}
+              {error && <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-4">{error}</div>}
 
               {loading ? (
                 <div className="flex justify-center py-8">
@@ -106,10 +98,7 @@ function ViewTeachersPage() {
                 <div className="bg-white shadow-md rounded-lg overflow-hidden">
                   {teachers.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      <p className="mt-2">No teachers found in your center</p>
+                      <p>No teachers found in this center</p>
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
@@ -130,21 +119,14 @@ function ViewTeachersPage() {
                         <tbody className="bg-white divide-y divide-gray-200">
                           {teachers.map((teacher) => (
                             <tr key={teacher.teacher_id} className="hover:bg-gray-50">
-                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
-                                  {teacher.teacher_full_name}
-
-                                </div>
+                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                                {teacher.teacher_full_name}
                               </td>
-                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
-                                  {teacher.teacher_name}
-                                </div>
+                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                                {teacher.teacher_name}
                               </td>
-                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                                <div className="text-xs sm:text-sm text-gray-500">
-                                  {formatDate(teacher.created_at)}
-                                </div>
+                              <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
+                                {formatDate(teacher.created_at)}
                               </td>
                             </tr>
                           ))}
