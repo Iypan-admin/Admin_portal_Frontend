@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import { getStudentsByCenter, getCenterById } from '../services/Api';
+import { getStudentsByCenter, getCenterById, getCenterByAdminId } from '../services/Api';
 
 function ViewStudentsPage() {
-  const { centerId } = useParams(); // Get centerId from URL
+  const { centerId: paramCenterId } = useParams(); // From URL (state admin login)
   const location = useLocation();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCenter, setSelectedCenter] = useState(null);
+  const [centerId, setCenterId] = useState(paramCenterId || null);
 
   // Format date helper function
   const formatDate = (dateString) =>
@@ -23,35 +24,60 @@ function ViewStudentsPage() {
   const formatPhone = (phone) =>
     phone ? phone.toString().replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3') : 'N/A';
 
-  // Load center info for sidebar
+  // Load center info
   useEffect(() => {
     const loadCenter = async () => {
       try {
-        // Check if name was passed via navigation state
-        if (location.state?.centerName) {
-          setSelectedCenter({ center_id: centerId, center_name: location.state.centerName });
-          return;
-        }
-
-        // Otherwise, fetch center info by ID
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Authentication token not found');
 
-        const centerResponse = await getCenterById(centerId, token); // Make sure you have this API
-        if (!centerResponse || !centerResponse.success) {
-          throw new Error(centerResponse?.message || 'Failed to fetch center info');
-        }
+        if (paramCenterId) {
+          // ✅ State admin login (centerId comes from URL)
+          if (location.state?.centerName) {
+            setSelectedCenter({
+              center_id: paramCenterId,
+              center_name: location.state.centerName,
+            });
+            setCenterId(paramCenterId);
+            return;
+          }
 
-        const center = centerResponse.data;
-        setSelectedCenter({ center_id: center.center_id, center_name: center.center_name });
+          const centerResponse = await getCenterById(paramCenterId, token);
+          if (!centerResponse || !centerResponse.success) {
+            throw new Error(centerResponse?.message || 'Failed to fetch center info');
+          }
+
+          const center = centerResponse.data;
+          setSelectedCenter({
+            center_id: center.center_id,
+            center_name: center.center_name,
+          });
+          setCenterId(center.center_id);
+        } else {
+          // ✅ Center login (no centerId in URL → fetch by admin)
+          const centerResponse = await getCenterByAdminId(token);
+          if (!centerResponse || !centerResponse.success) {
+            throw new Error(centerResponse?.message || 'Failed to fetch center info');
+          }
+
+          const center = Array.isArray(centerResponse.data)
+            ? centerResponse.data[0]
+            : centerResponse.data;
+
+          setSelectedCenter({
+            center_id: center.center_id,
+            center_name: center.center_name,
+          });
+          setCenterId(center.center_id);
+        }
       } catch (err) {
         console.error('Failed to load center info:', err);
-        setSelectedCenter({ center_id: centerId, center_name: 'Unknown Center' });
+        setSelectedCenter({ center_id: 'unknown', center_name: 'Unknown Center' });
       }
     };
 
-    if (centerId) loadCenter();
-  }, [centerId, location.state]);
+    loadCenter();
+  }, [paramCenterId, location.state]);
 
   // Load students
   useEffect(() => {
@@ -165,7 +191,9 @@ function ViewStudentsPage() {
                                 </td>
                                 <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                   <span
-                                    className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${student.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                    className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${student.status
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'
                                       }`}
                                   >
                                     {student.status ? 'Active' : 'Inactive'}

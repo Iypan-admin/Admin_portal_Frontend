@@ -57,12 +57,16 @@ const ManageStudentsPage = () => {
     fetchStudents();
   }, []);
 
+  // Filter by search query & sort by status then by created_at descending
   const filteredStudents = students
     .filter((s) =>
       s.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
     )
     .sort((a, b) => {
-      return a.status === b.status ? 0 : a.status ? 1 : -1;
+      // Pending first, Active later
+      if (a.status !== b.status) return a.status ? 1 : -1;
+      // If same status, sort by recent created_at first
+      return new Date(b.created_at) - new Date(a.created_at);
     });
 
   if (loading) {
@@ -107,9 +111,7 @@ const ManageStudentsPage = () => {
               )}
 
               <div className="bg-white rounded-lg shadow-md">
-                {/* Horizontal scroll for mobile */}
                 <div className="overflow-x-auto w-full">
-                  {/* Vertical scroll for long lists */}
                   <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
                     <table className="w-full min-w-[700px] divide-y divide-gray-200">
                       <thead className="bg-gray-50 sticky top-0 z-10">
@@ -154,8 +156,6 @@ const ManageStudentsPage = () => {
                   </div>
                 </div>
               </div>
-
-
 
               {/* Empty State */}
               {filteredStudents.length === 0 && !loading && (
