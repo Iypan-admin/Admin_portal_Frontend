@@ -141,8 +141,8 @@ function ViewBatchesPage() {
                                 <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                                   <span
                                     className={`inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold ${batch.course_type === 'Immersion'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-blue-100 text-blue-800'
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-blue-100 text-blue-800'
                                       }`}
                                   >
                                     {batch.course_type}

@@ -811,6 +811,24 @@ export const addEliteCard = async (formData) => {
 
     return result;
 };
+// Get card_name by card_number
+export const getCardNameByNumber = async (cardNumber) => {
+    const token = localStorage.getItem("token"); // Retrieve the JWT token
+
+    const response = await fetch(`${LIST_API_URL}/elite-cards/card-name?card_number=${cardNumber}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+        return null; // Card not found
+    }
+
+    return result.card_name; // Return card_name
+};
 
 
 export const getInfluencerCount = async () => {

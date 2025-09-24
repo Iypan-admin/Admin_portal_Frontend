@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { fetchEliteCards, addEliteCard, getStudentByRegisterNumber } from "../services/Api";
+import { fetchEliteCards, addEliteCard, getStudentByRegisterNumber, getCardNameByNumber } from "../services/Api";
 
 const ViewCenterEliteCard = () => {
     const [eliteCards, setEliteCards] = useState([]);
@@ -43,8 +43,6 @@ const ViewCenterEliteCard = () => {
         fetchEliteCardsHandler();
     }, [token]);
 
-
-
     const handleFormSubmit = async (e) => {
         e.preventDefault();
 
@@ -59,9 +57,13 @@ const ViewCenterEliteCard = () => {
                 setFormData((prev) => ({ ...prev, student_name: name }));
             }
 
-            // Still check to be safe
             if (!formData.student_name) {
                 alert("Student name is required.");
+                return;
+            }
+
+            if (!formData.card_type) {
+                alert("Invalid card number. Please enter a valid one.");
                 return;
             }
 
@@ -80,7 +82,6 @@ const ViewCenterEliteCard = () => {
             alert(err.message || "Something went wrong. Please try again.");
         }
     };
-
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
@@ -164,12 +165,10 @@ const ViewCenterEliteCard = () => {
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
                     <div className="bg-white px-4 py-6 sm:px-6 sm:py-8 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md mx-4 sm:mx-auto">
-
-
                         <h2 className="text-xl font-semibold text-gray-800 mb-6 text-center">Connect Elite Card</h2>
                         <form onSubmit={handleFormSubmit} className="space-y-5">
 
-                            {/* Student Name (Read-only input) */}
+                            {/* Student Name */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Student Name</label>
                                 <input
@@ -181,7 +180,7 @@ const ViewCenterEliteCard = () => {
                                 />
                             </div>
 
-                            {/* Register Number (Auto-fetches student name) */}
+                            {/* Register Number */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Register Number</label>
                                 <input
@@ -192,7 +191,6 @@ const ViewCenterEliteCard = () => {
                                     onChange={async (e) => {
                                         const regNo = e.target.value;
 
-                                        // Update register number immediately, clear student name while typing
                                         setFormData((prev) => ({
                                             ...prev,
                                             register_number: regNo,
@@ -201,26 +199,21 @@ const ViewCenterEliteCard = () => {
 
                                         if (regNo.length >= 3) {
                                             try {
-                                                const name = await getStudentByRegisterNumber(regNo); // expects just the name string
+                                                const name = await getStudentByRegisterNumber(regNo);
                                                 setFormData((prev) => ({
                                                     ...prev,
                                                     student_name: name || "",
                                                 }));
                                             } catch (err) {
                                                 console.warn("Student not found:", regNo);
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    student_name: "",
-                                                }));
+                                                setFormData((prev) => ({ ...prev, student_name: "" }));
                                             }
                                         }
                                     }}
                                 />
                             </div>
 
-
-
-
+                            {/* Card Number */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
                                 <input
@@ -228,25 +221,43 @@ const ViewCenterEliteCard = () => {
                                     required
                                     className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                                     value={formData.card_number}
-                                    onChange={(e) => setFormData({ ...formData, card_number: e.target.value })}
+                                    onChange={async (e) => {
+                                        const cardNumber = e.target.value;
+
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            card_number: cardNumber,
+                                            card_type: "",
+                                        }));
+
+                                        if (cardNumber.length >= 3) {
+                                            try {
+                                                const cardName = await getCardNameByNumber(cardNumber);
+                                                if (cardName) {
+                                                    setFormData((prev) => ({ ...prev, card_type: cardName }));
+                                                }
+                                            } catch (err) {
+                                                console.warn("Card not found:", cardNumber);
+                                                setFormData((prev) => ({ ...prev, card_type: "" }));
+                                            }
+                                        }
+                                    }}
                                 />
                             </div>
 
+                            {/* Card Type (read-only) */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Card Type</label>
-                                <select
+                                <input
+                                    type="text"
+                                    readOnly
                                     required
-                                    className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm bg-gray-100 focus:ring-blue-500 focus:border-blue-500 text-sm"
                                     value={formData.card_type}
-                                    onChange={(e) => setFormData({ ...formData, card_type: e.target.value })}
-                                >
-                                    <option value="">Select Type</option>
-                                    <option value="Elite EduPass">Elite EduPass</option>
-                                    <option value="Elite ScholarPass">Elite ScholarPass</option>
-                                    <option value="Infinite Pass">Infinite Pass</option>
-                                </select>
+                                />
                             </div>
 
+                            {/* Buttons */}
                             <div className="flex justify-end pt-2 gap-3">
                                 <button
                                     type="button"
@@ -265,9 +276,8 @@ const ViewCenterEliteCard = () => {
                         </form>
                     </div>
                 </div>
-            )
-            }
-        </div >
+            )}
+        </div>
     );
 };
 
