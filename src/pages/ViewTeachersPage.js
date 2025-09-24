@@ -4,7 +4,6 @@ import { getTeachersByCenter, getCenterByAdminId } from '../services/Api';
 
 function ViewTeachersPage() {
   const [teachers, setTeachers] = useState([]);
-  const [centers, setCenters] = useState([]);
   const [selectedCenter, setSelectedCenter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +16,7 @@ function ViewTeachersPage() {
     });
   };
 
-  // Fetch centers and teachers
+  // Fetch centers and teachers on mount
   useEffect(() => {
     const fetchCentersAndTeachers = async () => {
       try {
@@ -26,33 +25,23 @@ function ViewTeachersPage() {
         if (!token) throw new Error('Authentication token not found');
 
         const centerResponse = await getCenterByAdminId(token);
-        console.log('Center Response:', centerResponse);
-
         if (!centerResponse || !centerResponse.success) {
           throw new Error(centerResponse?.message || 'Failed to get center information');
         }
 
         const centerData = centerResponse.data || [];
+        if (centerData.length === 0) throw new Error('No centers found for this admin');
 
-        if (centerData.length === 0) {
-          throw new Error('No centers found for this admin');
-        }
 
-        setCenters(centerData);
-
-        // Check if a center was previously selected
+        // Use previously selected center or first center
         const savedCenter = JSON.parse(localStorage.getItem('selectedCenterView'));
         const initialCenter = savedCenter || centerData[0];
         setSelectedCenter(initialCenter);
 
-        // Fetch teachers for the initial center
         const teachersResponse = await getTeachersByCenter(initialCenter.center_id, token);
-        console.log('Teachers Response:', teachersResponse);
-
         if (!teachersResponse || !teachersResponse.success) {
           throw new Error(teachersResponse?.message || 'Failed to fetch teachers data');
         }
-
         if (!Array.isArray(teachersResponse.data)) {
           throw new Error('Invalid teachers data format received');
         }
@@ -70,33 +59,6 @@ function ViewTeachersPage() {
     fetchCentersAndTeachers();
   }, []);
 
-  // Handle center selection change
-  const handleCenterChange = async (e) => {
-    const centerId = e.target.value;
-    const center = centers.find((c) => c.center_id === centerId);
-    setSelectedCenter(center);
-    localStorage.setItem('selectedCenterView', JSON.stringify(center));
-
-    try {
-      setLoading(true);
-      setError(null);
-      const token = localStorage.getItem('token');
-      const response = await getTeachersByCenter(centerId, token);
-      console.log('Teachers Response (on center change):', response);
-
-      if (!response || !response.success) throw new Error(response?.message || 'Failed to fetch teachers');
-      if (!Array.isArray(response.data)) throw new Error('Invalid teachers data format');
-
-      setTeachers(response.data);
-    } catch (err) {
-      console.error('Error fetching teachers for selected center:', err);
-      setError(err.message || 'Failed to load teachers');
-      setTeachers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 flex">
       <Navbar showCenterViewOptions={!!selectedCenter} selectedCenter={selectedCenter} />
@@ -109,7 +71,6 @@ function ViewTeachersPage() {
               <div className="mt-2 sm:mt-0 text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
                 {selectedCenter?.center_name}
               </div>
-
 
               <div className="mt-2 sm:mt-0 text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
                 {teachers.length} {teachers.length === 1 ? 'Teacher' : 'Teachers'}
