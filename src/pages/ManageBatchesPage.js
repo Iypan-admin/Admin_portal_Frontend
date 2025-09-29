@@ -37,7 +37,6 @@ const ManageBatchesPage = () => {
       return numB - numA; // highest batch number first
     });
 
-
   const fetchBatches = async () => {
     try {
       setLoading(true);
@@ -188,84 +187,86 @@ const ManageBatchesPage = () => {
               {/* Table Container */}
               <div className="bg-white rounded-lg shadow-md">
                 <div className="overflow-x-auto w-full">
-                  <table className="min-w-[1000px] divide-y divide-gray-200">
-                    <thead className="bg-gray-50 sticky top-0 z-10">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Batch Name
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Type
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Duration
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Center
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Teacher
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Course
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Students
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredBatches.map((batch) => (
-                        <tr key={batch.batch_id} className="hover:bg-gray-50">
-                          <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-normal break-words">
-                            {batch.batch_name}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-blue-100 text-blue-800"
-                                }`}
-                            >
-                              {batch.course_type}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {batch.duration} months
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {batch.center_name}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {batch.teacher_name}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {batch.course_name}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {batch.student_count ?? 0}
-                          </td>
-                          <td className="px-4 py-4 text-sm font-medium flex gap-2">
-                            <button
-                              className="text-blue-600 hover:text-blue-900"
-                              onClick={() => setEditingBatch(batch)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="text-red-600 hover:text-red-900"
-                              onClick={() => handleDeleteBatch(batch.batch_id)}
-                            >
-                              Delete
-                            </button>
-                          </td>
+                  <div className="max-h-[400px] overflow-y-auto"> {/* 👈 only 5 rows visible (scrollable body) */}
+                    <table className="min-w-[1000px] divide-y divide-gray-200">
+                      <thead className="bg-gray-50 sticky top-0 z-10">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Batch Name
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Type
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Duration
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Center
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Teacher
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Course
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Students
+                          </th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {filteredBatches.map((batch) => (
+                          <tr key={batch.batch_id} className="hover:bg-gray-50">
+                            <td className="px-4 py-4 text-sm font-medium text-gray-900 whitespace-normal break-words">
+                              {batch.batch_name}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-semibold ${batch.course_type === "Immersion"
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-blue-100 text-blue-800"
+                                  }`}
+                              >
+                                {batch.course_type}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              {batch.duration} months
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              {batch.center_name}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              {batch.teacher_name}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              {batch.course_name}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-500">
+                              {batch.student_count ?? 0}
+                            </td>
+                            <td className="px-4 py-4 text-sm font-medium flex gap-2">
+                              <button
+                                className="text-blue-600 hover:text-blue-900"
+                                onClick={() => setEditingBatch(batch)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="text-red-600 hover:text-red-900"
+                                onClick={() => handleDeleteBatch(batch.batch_id)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
